@@ -1,0 +1,8 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: org.openrewrite.go.BestPractices
+displayName: Go best practices
+description: Apply Go best practices and idiomatic patterns.
+recipeList:
+  - org.openrewrite.go.OrganizeImports
+  - org.openrewrite.go.MigrateIoutilToIO

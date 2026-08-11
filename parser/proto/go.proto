@@ -1,0 +1,643 @@
+syntax = "proto3";
+
+package org.openrewrite.go.proto;
+
+option java_package = "org.openrewrite.go.proto";
+option java_outer_classname = "GoProto";
+option go_package = "github.com/openrewrite/rewrite-go/parser/proto";
+
+// Core types shared across all nodes
+
+message UUID {
+  int64 most_sig_bits = 1;
+  int64 least_sig_bits = 2;
+}
+
+message Space {
+  string whitespace = 1;
+  repeated Comment comments = 2;
+}
+
+message Comment {
+  string text = 1;
+  bool multiline = 2;
+  Space suffix = 3;
+  Markers markers = 4;
+}
+
+message Markers {
+  UUID id = 1;
+  repeated Marker entries = 2;
+}
+
+message Marker {
+  string type = 1;
+  bytes value = 2;
+}
+
+// Type attribution
+
+message GoType {
+  oneof type {
+    BasicType basic = 1;
+    NamedType named = 2;
+    PointerType pointer = 3;
+    ArrayType array = 4;
+    SliceType slice = 5;
+    MapType map = 6;
+    ChanType chan = 7;
+    FuncType func = 8;
+    InterfaceType interface = 9;
+    StructType struct = 10;
+    TypeParameter type_parameter = 11;
+  }
+}
+
+message BasicType {
+  string kind = 1;
+}
+
+message NamedType {
+  string package_path = 1;
+  string name = 2;
+  GoType underlying = 3;
+}
+
+message PointerType {
+  GoType elem = 1;
+}
+
+message ArrayType {
+  int64 len = 1;
+  GoType elem = 2;
+}
+
+message SliceType {
+  GoType elem = 1;
+}
+
+message MapType {
+  GoType key = 1;
+  GoType value = 2;
+}
+
+message ChanType {
+  enum Direction {
+    SEND_RECV = 0;
+    SEND_ONLY = 1;
+    RECV_ONLY = 2;
+  }
+  Direction dir = 1;
+  GoType elem = 2;
+}
+
+message FuncType {
+  repeated Field params = 1;
+  repeated Field results = 2;
+  repeated TypeParamDecl type_params = 3;
+}
+
+message InterfaceType {
+  repeated Method methods = 1;
+}
+
+message StructType {
+  repeated Field fields = 1;
+}
+
+message TypeParameter {
+  string name = 1;
+}
+
+message Field {
+  repeated string names = 1;
+  GoType type = 2;
+  string tag = 3;
+  Space prefix = 4;
+  Markers markers = 5;
+}
+
+message Method {
+  string name = 1;
+  FuncType type = 2;
+  Space prefix = 3;
+  Markers markers = 4;
+}
+
+message TypeParamDecl {
+  repeated string names = 1;
+  GoType constraint = 2;
+  Space prefix = 3;
+  Markers markers = 4;
+}
+
+// Go source file (compilation unit)
+
+message GoFile {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  string source_path = 4;
+  string charset_name = 5;
+  bool charset_bom_marked = 6;
+  
+  PackageClause package_clause = 7;
+  repeated ImportDecl imports = 8;
+  repeated Decl declarations = 9;
+  Space eof = 10;
+}
+
+message PackageClause {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Ident name = 4;
+}
+
+message ImportDecl {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  repeated ImportSpec specs = 4;
+  bool grouped = 5;
+  Space end = 6;
+}
+
+message ImportSpec {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Ident alias = 4;
+  BasicLit path = 5;
+}
+
+// Declarations
+
+message Decl {
+  oneof decl {
+    FuncDecl func_decl = 1;
+    GenDecl gen_decl = 2;
+  }
+}
+
+message FuncDecl {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Field recv = 4;
+  Ident name = 5;
+  repeated TypeParamDecl type_params = 6;
+  FuncType type = 7;
+  BlockStmt body = 8;
+}
+
+message GenDecl {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  string tok = 4;
+  repeated Spec specs = 5;
+  bool grouped = 6;
+  Space end = 7;
+}
+
+message Spec {
+  oneof spec {
+    ValueSpec value_spec = 1;
+    TypeSpec type_spec = 2;
+  }
+}
+
+message ValueSpec {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  repeated Ident names = 4;
+  GoType type = 5;
+  repeated Expr values = 6;
+}
+
+message TypeSpec {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Ident name = 4;
+  repeated TypeParamDecl type_params = 5;
+  GoType type = 6;
+  bool assign = 7;
+}
+
+// Statements
+
+message Stmt {
+  oneof stmt {
+    BlockStmt block_stmt = 1;
+    ExprStmt expr_stmt = 2;
+    AssignStmt assign_stmt = 3;
+    ReturnStmt return_stmt = 4;
+    IfStmt if_stmt = 5;
+    ForStmt for_stmt = 6;
+    RangeStmt range_stmt = 7;
+    SwitchStmt switch_stmt = 8;
+    TypeSwitchStmt type_switch_stmt = 9;
+    SelectStmt select_stmt = 10;
+    CaseClause case_clause = 11;
+    CommClause comm_clause = 12;
+    GoStmt go_stmt = 13;
+    DeferStmt defer_stmt = 14;
+    SendStmt send_stmt = 15;
+    IncDecStmt inc_dec_stmt = 16;
+    BranchStmt branch_stmt = 17;
+    LabeledStmt labeled_stmt = 18;
+    EmptyStmt empty_stmt = 19;
+    DeclStmt decl_stmt = 20;
+  }
+}
+
+message BlockStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  repeated Stmt stmts = 4;
+  Space end = 5;
+}
+
+message ExprStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr expr = 4;
+}
+
+message AssignStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  repeated Expr lhs = 4;
+  string tok = 5;
+  repeated Expr rhs = 6;
+}
+
+message ReturnStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  repeated Expr results = 4;
+}
+
+message IfStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Stmt init = 4;
+  Expr cond = 5;
+  BlockStmt body = 6;
+  Stmt else_stmt = 7;
+}
+
+message ForStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Stmt init = 4;
+  Expr cond = 5;
+  Stmt post = 6;
+  BlockStmt body = 7;
+}
+
+message RangeStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr key = 4;
+  Expr value = 5;
+  string tok = 6;
+  Expr x = 7;
+  BlockStmt body = 8;
+}
+
+message SwitchStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Stmt init = 4;
+  Expr tag = 5;
+  BlockStmt body = 6;
+}
+
+message TypeSwitchStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Stmt init = 4;
+  Stmt assign = 5;
+  BlockStmt body = 6;
+}
+
+message SelectStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  BlockStmt body = 4;
+}
+
+message CaseClause {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  repeated Expr list = 4;
+  repeated Stmt body = 5;
+}
+
+message CommClause {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Stmt comm = 4;
+  repeated Stmt body = 5;
+}
+
+message GoStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr call = 4;
+}
+
+message DeferStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr call = 4;
+}
+
+message SendStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr chan = 4;
+  Expr value = 5;
+}
+
+message IncDecStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr x = 4;
+  string tok = 5;
+}
+
+message BranchStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  string tok = 4;
+  Ident label = 5;
+}
+
+message LabeledStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Ident label = 4;
+  Stmt stmt = 5;
+}
+
+message EmptyStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+}
+
+message DeclStmt {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Decl decl = 4;
+}
+
+// Expressions
+
+message Expr {
+  oneof expr {
+    Ident ident = 1;
+    BasicLit basic_lit = 2;
+    CompositeLit composite_lit = 3;
+    FuncLit func_lit = 4;
+    CallExpr call_expr = 5;
+    SelectorExpr selector_expr = 6;
+    IndexExpr index_expr = 7;
+    SliceExpr slice_expr = 8;
+    TypeAssertExpr type_assert_expr = 9;
+    StarExpr star_expr = 10;
+    UnaryExpr unary_expr = 11;
+    BinaryExpr binary_expr = 12;
+    ParenExpr paren_expr = 13;
+    KeyValueExpr key_value_expr = 14;
+    Ellipsis ellipsis = 15;
+    ArrayTypeExpr array_type_expr = 16;
+    SliceTypeExpr slice_type_expr = 17;
+    MapTypeExpr map_type_expr = 18;
+    ChanTypeExpr chan_type_expr = 19;
+    FuncTypeExpr func_type_expr = 20;
+    InterfaceTypeExpr interface_type_expr = 21;
+    StructTypeExpr struct_type_expr = 22;
+    PointerTypeExpr pointer_type_expr = 23;
+  }
+}
+
+message Ident {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  string name = 4;
+  GoType type = 5;
+}
+
+message BasicLit {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  string kind = 4;
+  string value = 5;
+}
+
+message CompositeLit {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr type = 4;
+  repeated Expr elts = 5;
+  GoType resolved_type = 6;
+}
+
+message FuncLit {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  FuncType type = 4;
+  BlockStmt body = 5;
+}
+
+message CallExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr fun = 4;
+  repeated Expr args = 5;
+  bool ellipsis = 6;
+  GoType type = 7;
+}
+
+message SelectorExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr x = 4;
+  Ident sel = 5;
+  GoType type = 6;
+}
+
+message IndexExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr x = 4;
+  Expr index = 5;
+  GoType type = 6;
+}
+
+message SliceExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr x = 4;
+  Expr low = 5;
+  Expr high = 6;
+  Expr max = 7;
+  bool slice3 = 8;
+  GoType type = 9;
+}
+
+message TypeAssertExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr x = 4;
+  Expr type = 5;
+  GoType resolved_type = 6;
+}
+
+message StarExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr x = 4;
+  GoType type = 5;
+}
+
+message UnaryExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  string op = 4;
+  Expr x = 5;
+  GoType type = 6;
+}
+
+message BinaryExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr x = 4;
+  string op = 5;
+  Expr y = 6;
+  GoType type = 7;
+}
+
+message ParenExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr x = 4;
+  GoType type = 5;
+}
+
+message KeyValueExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr key = 4;
+  Expr value = 5;
+}
+
+message Ellipsis {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr elt = 4;
+  GoType type = 5;
+}
+
+// Type expressions (for inline type syntax)
+
+message ArrayTypeExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr len = 4;
+  Expr elt = 5;
+}
+
+message SliceTypeExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr elt = 4;
+}
+
+message MapTypeExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr key = 4;
+  Expr value = 5;
+}
+
+message ChanTypeExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  int32 dir = 4;
+  Expr value = 5;
+}
+
+message FuncTypeExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  repeated Field params = 4;
+  repeated Field results = 5;
+  repeated TypeParamDecl type_params = 6;
+}
+
+message InterfaceTypeExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  repeated Method methods = 4;
+}
+
+message StructTypeExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  repeated Field fields = 4;
+}
+
+message PointerTypeExpr {
+  UUID id = 1;
+  Space prefix = 2;
+  Markers markers = 3;
+  Expr base = 4;
+}
