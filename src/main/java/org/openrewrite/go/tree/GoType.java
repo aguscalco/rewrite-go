@@ -34,11 +34,13 @@ public final class GoType implements Go {
     }
     
     @Data
+    @AllArgsConstructor
     public static final class Basic implements Type {
         String kind;
     }
     
     @Data
+    @AllArgsConstructor
     public static final class Named implements Type {
         String packagePath;
         String name;
@@ -46,28 +48,33 @@ public final class GoType implements Go {
     }
     
     @Data
+    @AllArgsConstructor
     public static final class Pointer implements Type {
         GoType elem;
     }
     
     @Data
+    @AllArgsConstructor
     public static final class Array implements Type {
         long len;
         GoType elem;
     }
     
     @Data
+    @AllArgsConstructor
     public static final class Slice implements Type {
         GoType elem;
     }
     
     @Data
+    @AllArgsConstructor
     public static final class Map implements Type {
         GoType key;
         GoType value;
     }
     
     @Data
+    @AllArgsConstructor
     public static final class Chan implements Type {
         Direction dir;
         GoType elem;
@@ -80,6 +87,7 @@ public final class GoType implements Go {
     }
     
     @Data
+    @AllArgsConstructor
     public static final class Func implements Type {
         java.util.List<Field> params;
         java.util.List<Field> results;
@@ -87,16 +95,19 @@ public final class GoType implements Go {
     }
     
     @Data
+    @AllArgsConstructor
     public static final class Interface implements Type {
         java.util.List<Method> methods;
     }
     
     @Data
+    @AllArgsConstructor
     public static final class Struct implements Type {
         java.util.List<Field> fields;
     }
     
     @Data
+    @AllArgsConstructor
     public static final class TypeParameter implements Type {
         String name;
     }

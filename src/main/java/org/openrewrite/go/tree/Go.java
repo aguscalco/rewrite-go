@@ -13,8 +13,9 @@ import java.util.UUID;
 public interface Go extends Tree {
     
     @Override
+    @SuppressWarnings("unchecked")
     default <R extends Tree, P> R accept(TreeVisitor<R, P> v, P p) {
-        return v.adapt(GoVisitor.class).visitGo(this, p);
+        return (R) v.adapt(GoVisitor.class).visitGo(this, p);
     }
     
     @Override
@@ -25,8 +26,4 @@ public interface Go extends Tree {
     Space getPrefix();
     
     <G extends Go> G withPrefix(Space prefix);
-    
-    Markers getMarkers();
-    
-    <G extends Go> G withMarkers(Markers markers);
 }

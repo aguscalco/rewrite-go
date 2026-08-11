@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("org.openrewrite.build.recipe-library-base") version "latest.release"
+    id("com.google.protobuf") version "0.9.4"
 }
 
 group = "org.openrewrite.recipe"
@@ -38,7 +39,21 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.25.3"
+    }
+}
+
+sourceSets {
+    main {
+        proto {
+            srcDir("parser/proto")
+        }
+    }
+}
+
 tasks.withType<JavaCompile> {
     options.compilerArgs.add("-parameters")
-    options.release.set(8)
+    options.release.set(17)
 }

@@ -2,6 +2,7 @@ package org.openrewrite.go;
 
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
+import org.openrewrite.Tree;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.go.tree.*;
 
@@ -24,7 +25,6 @@ public class OrganizeImports extends Recipe {
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         return new GoVisitor<ExecutionContext>() {
-            @Override
             public Tree visitGoFile(GoFile goFile, ExecutionContext ctx) {
                 if (goFile.getImports().isEmpty()) {
                     return goFile;

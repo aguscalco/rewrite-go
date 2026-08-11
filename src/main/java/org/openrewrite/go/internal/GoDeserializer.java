@@ -23,7 +23,9 @@ public class GoDeserializer {
             proto.hasPackageClause() ? deserializePackageClause(proto.getPackageClause()) : null,
             deserializeImportDecls(proto.getImportsList()),
             deserializeDecls(proto.getDeclarationsList()),
-            toSpace(proto.getEof())
+            toSpace(proto.getEof()),
+            null,
+            null
         );
     }
     
@@ -416,6 +418,6 @@ public class GoDeserializer {
         if (proto == null) {
             return Markers.EMPTY;
         }
-        return Markers.build(toUUID(proto.getId()));
+        return new Markers(toUUID(proto.getId()), java.util.Collections.emptyList());
     }
 }

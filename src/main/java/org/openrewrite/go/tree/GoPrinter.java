@@ -10,7 +10,7 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
     @Override
     public Tree visit(Tree tree, PrintOutputCapture<P> p) {
         if (tree instanceof Go) {
-            return ((Go) tree).accept(new GoVisitor<P>() {
+            return ((Go) tree).accept(new GoVisitor<PrintOutputCapture<P>>() {
                 @Override
                 public Tree visitGoFile(GoFile goFile, PrintOutputCapture<P> p) {
                     printSpace(goFile.getPrefix(), p);

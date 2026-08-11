@@ -54,12 +54,12 @@ A separate module for Gin framework migrations:
 ### Prerequisites
 
 - Go 1.21+
-- Java 21+
-- Gradle 8+
+- Java 17+ (Java 21 recommended)
+- Gradle 8+ OR Maven 3.6+
 
-### Build Steps
+### Build with Gradle
 
-1. **Generate protobuf code**:
+1. **Generate protobuf code** (first time only):
    ```bash
    cd parser
    protoc --go_out=. --go_opt=paths=source_relative proto/go.proto
@@ -74,6 +74,35 @@ A separate module for Gin framework migrations:
 3. **Build Java module**:
    ```bash
    ./gradlew build
+   ```
+
+### Build with Maven
+
+1. **Generate protobuf code** (first time only):
+   ```bash
+   cd parser
+   protoc --go_out=. --go_opt=paths=source_relative proto/go.proto
+   ```
+
+2. **Build Go parser**:
+   ```bash
+   cd parser
+   go build ./...
+   ```
+
+3. **Build Java module**:
+   ```bash
+   mvn clean compile
+   ```
+
+4. **Run tests**:
+   ```bash
+   mvn test
+   ```
+
+5. **Package**:
+   ```bash
+   mvn package
    ```
 
 ## Usage

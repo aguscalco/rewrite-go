@@ -3,6 +3,7 @@ package org.openrewrite.go;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Option;
 import org.openrewrite.Recipe;
+import org.openrewrite.Tree;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.go.tree.*;
 
@@ -26,7 +27,6 @@ public class WrapErrorWithContext extends Recipe {
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         return new GoVisitor<ExecutionContext>() {
-            @Override
             public Tree visitReturnStmt(ReturnStmt returnStmt, ExecutionContext ctx) {
                 if (returnStmt.getResults().size() != 1) {
                     return returnStmt;

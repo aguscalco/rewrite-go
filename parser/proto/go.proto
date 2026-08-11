@@ -38,6 +38,10 @@ message Marker {
 // Type attribution
 
 message GoType {
+  UUID id = 12;
+  Space prefix = 13;
+  Markers markers = 14;
+  
   oneof type {
     BasicType basic = 1;
     NamedType named = 2;
@@ -92,6 +96,9 @@ message ChanType {
 }
 
 message FuncType {
+  UUID id = 4;
+  Space prefix = 5;
+  Markers markers = 6;
   repeated Field params = 1;
   repeated Field results = 2;
   repeated TypeParamDecl type_params = 3;
@@ -110,6 +117,7 @@ message TypeParameter {
 }
 
 message Field {
+  UUID id = 6;
   repeated string names = 1;
   GoType type = 2;
   string tag = 3;
@@ -125,6 +133,7 @@ message Method {
 }
 
 message TypeParamDecl {
+  UUID id = 5;
   repeated string names = 1;
   GoType constraint = 2;
   Space prefix = 3;

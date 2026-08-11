@@ -2,6 +2,7 @@ package org.openrewrite.go;
 
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
+import org.openrewrite.Tree;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.go.tree.*;
 
@@ -20,7 +21,6 @@ public class MigrateIoutilToIO extends Recipe {
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         return new GoVisitor<ExecutionContext>() {
-            @Override
             public Tree visitImportSpec(ImportSpec importSpec, ExecutionContext ctx) {
                 String path = importSpec.getPath().getValue();
                 if (path.contains("io/ioutil")) {
@@ -30,7 +30,6 @@ public class MigrateIoutilToIO extends Recipe {
                 return importSpec;
             }
             
-            @Override
             public Tree visitSelectorExpr(SelectorExpr selectorExpr, ExecutionContext ctx) {
                 if (!(selectorExpr.getX() instanceof Ident)) {
                     return selectorExpr;

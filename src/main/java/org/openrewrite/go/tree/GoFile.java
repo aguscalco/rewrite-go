@@ -2,17 +2,21 @@ package org.openrewrite.go.tree;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.openrewrite.Cursor;
+import org.openrewrite.FileAttributes;
+import org.openrewrite.PrintOutputCapture;
 import org.openrewrite.Tree;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.marker.Markers;
 
+import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 @RequiredArgsConstructor
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Data
 public final class GoFile implements Go, org.openrewrite.SourceFile {
     
@@ -56,6 +60,14 @@ public final class GoFile implements Go, org.openrewrite.SourceFile {
     @With
     @Getter
     Space eof;
+    
+    @With
+    @Getter
+    FileAttributes fileAttributes;
+    
+    @With
+    @Getter
+    org.openrewrite.Checksum checksum;
     
     @Override
     public <P> TreeVisitor<?, PrintOutputCapture<P>> printer(Cursor cursor) {
