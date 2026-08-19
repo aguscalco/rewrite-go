@@ -146,7 +146,7 @@ public class GoDeserializer {
             toSpace(proto.getPrefix()),
             toMarkers(proto.getMarkers()),
             deserializeIdents(proto.getNamesList()),
-            proto.hasType() ? deserializeGoType(proto.getType()) : null,
+            proto.hasType() ? deserializeExpr(proto.getType()) : null,
             deserializeExprs(proto.getValuesList())
         );
     }
@@ -158,7 +158,7 @@ public class GoDeserializer {
             toMarkers(proto.getMarkers()),
             deserializeIdent(proto.getName()),
             deserializeTypeParamDecls(proto.getTypeParamsList()),
-            proto.hasType() ? deserializeGoType(proto.getType()) : null,
+            proto.hasType() ? deserializeExpr(proto.getType()) : null,
             proto.getAssign()
         );
     }
@@ -169,7 +169,7 @@ public class GoDeserializer {
             toSpace(proto.getPrefix()),
             toMarkers(proto.getMarkers()),
             proto.getNamesList(),
-            proto.hasType() ? deserializeGoType(proto.getType()) : null,
+            proto.hasType() ? deserializeExpr(proto.getType()) : null,
             proto.getTag()
         );
     }
@@ -257,6 +257,18 @@ public class GoDeserializer {
             return deserializeBinaryExpr(proto.getBinaryExpr());
         } else if (proto.hasUnaryExpr()) {
             return deserializeUnaryExpr(proto.getUnaryExpr());
+        } else if (proto.hasInterfaceTypeExpr()) {
+            return deserializeInterfaceTypeExpr(proto.getInterfaceTypeExpr());
+        } else if (proto.hasArrayTypeExpr()) {
+            return deserializeArrayTypeExpr(proto.getArrayTypeExpr());
+        } else if (proto.hasMapTypeExpr()) {
+            return deserializeMapTypeExpr(proto.getMapTypeExpr());
+        } else if (proto.hasChanTypeExpr()) {
+            return deserializeChanTypeExpr(proto.getChanTypeExpr());
+        } else if (proto.hasStructTypeExpr()) {
+            return deserializeStructTypeExpr(proto.getStructTypeExpr());
+        } else if (proto.hasFuncTypeExpr()) {
+            return deserializeFuncTypeExpr(proto.getFuncTypeExpr());
         }
         return null;
     }
@@ -332,6 +344,82 @@ public class GoDeserializer {
             proto.getOp(),
             deserializeExpr(proto.getX()),
             proto.hasType() ? deserializeGoType(proto.getType()) : null
+        );
+    }
+    
+    private InterfaceTypeExpr deserializeInterfaceTypeExpr(GoProto.InterfaceTypeExpr proto) {
+        return new InterfaceTypeExpr(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            deserializeMethods(proto.getMethodsList())
+        );
+    }
+    
+    private List<Method> deserializeMethods(List<GoProto.Method> protos) {
+        List<Method> result = new ArrayList<>();
+        for (GoProto.Method proto : protos) {
+            result.add(deserializeMethod(proto));
+        }
+        return result;
+    }
+    
+    private Method deserializeMethod(GoProto.Method proto) {
+        return new Method(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            proto.getName(),
+            proto.hasType() ? deserializeFuncType(proto.getType()) : null
+        );
+    }
+    
+    private ArrayTypeExpr deserializeArrayTypeExpr(GoProto.ArrayTypeExpr proto) {
+        return new ArrayTypeExpr(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            proto.hasLen() ? deserializeExpr(proto.getLen()) : null,
+            proto.hasElt() ? deserializeExpr(proto.getElt()) : null
+        );
+    }
+    
+    private MapTypeExpr deserializeMapTypeExpr(GoProto.MapTypeExpr proto) {
+        return new MapTypeExpr(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            proto.hasKey() ? deserializeExpr(proto.getKey()) : null,
+            proto.hasValue() ? deserializeExpr(proto.getValue()) : null
+        );
+    }
+    
+    private ChanTypeExpr deserializeChanTypeExpr(GoProto.ChanTypeExpr proto) {
+        return new ChanTypeExpr(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            proto.getDir(),
+            proto.hasValue() ? deserializeExpr(proto.getValue()) : null
+        );
+    }
+    
+    private StructTypeExpr deserializeStructTypeExpr(GoProto.StructTypeExpr proto) {
+        return new StructTypeExpr(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            deserializeFields(proto.getFieldsList())
+        );
+    }
+    
+    private FuncTypeExpr deserializeFuncTypeExpr(GoProto.FuncTypeExpr proto) {
+        return new FuncTypeExpr(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            deserializeFields(proto.getParamsList()),
+            deserializeFields(proto.getResultsList())
         );
     }
     

@@ -6,13 +6,12 @@ import org.openrewrite.Tree;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.marker.Markers;
 
-import java.util.List;
 import java.util.UUID;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 @Data
-public final class TypeSpec implements Go, Spec {
+public final class MapTypeExpr implements Go, Expr {
     
     @With
     @EqualsAndHashCode.Include
@@ -29,22 +28,14 @@ public final class TypeSpec implements Go, Spec {
     
     @With
     @Getter
-    Ident name;
+    Expr key;
     
     @With
     @Getter
-    List<TypeParamDecl> typeParams;
-    
-    @With
-    @Getter
-    Expr type;
-    
-    @With
-    @Getter
-    boolean assign;
+    Expr value;
     
     @Override
     public <R extends Tree, P> R accept(TreeVisitor<R, P> v, P p) {
-        return (R) v.adapt(GoVisitor.class).visitTypeSpec(this, p);
+        return (R) v.adapt(GoVisitor.class).visitMapTypeExpr(this, p);
     }
 }

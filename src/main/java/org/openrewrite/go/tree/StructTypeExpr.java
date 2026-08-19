@@ -12,7 +12,7 @@ import java.util.UUID;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 @Data
-public final class TypeSpec implements Go, Spec {
+public final class StructTypeExpr implements Go, Expr {
     
     @With
     @EqualsAndHashCode.Include
@@ -29,22 +29,10 @@ public final class TypeSpec implements Go, Spec {
     
     @With
     @Getter
-    Ident name;
-    
-    @With
-    @Getter
-    List<TypeParamDecl> typeParams;
-    
-    @With
-    @Getter
-    Expr type;
-    
-    @With
-    @Getter
-    boolean assign;
+    List<Field> fields;
     
     @Override
     public <R extends Tree, P> R accept(TreeVisitor<R, P> v, P p) {
-        return (R) v.adapt(GoVisitor.class).visitTypeSpec(this, p);
+        return (R) v.adapt(GoVisitor.class).visitStructTypeExpr(this, p);
     }
 }

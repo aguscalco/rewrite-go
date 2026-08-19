@@ -51,7 +51,7 @@ class WrapErrorWithContextTest {
                     Space.EMPTY,
                     Markers.EMPTY,
                     Collections.emptyList(),
-                    new GoType(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, new GoType.Named("", "error", null)),
+                    new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "error", null),
                     ""
                 )),
                 Collections.emptyList()
@@ -148,7 +148,7 @@ class WrapErrorWithContextTest {
                     Space.EMPTY,
                     Markers.EMPTY,
                     Collections.emptyList(),
-                    new GoType(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, new GoType.Basic("int")),
+                        new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "int", null),
                     ""
                 )),
                 Collections.emptyList()
@@ -231,7 +231,7 @@ class WrapErrorWithContextTest {
                         Space.EMPTY,
                         Markers.EMPTY,
                         Collections.emptyList(),
-                        new GoType(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, new GoType.Basic("int")),
+                    new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "int", null),
                         ""
                     ),
                     new Field(
@@ -239,7 +239,7 @@ class WrapErrorWithContextTest {
                         Space.EMPTY,
                         Markers.EMPTY,
                         Collections.emptyList(),
-                        new GoType(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, new GoType.Named("", "error", null)),
+                        new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "error", null),
                         ""
                     )
                 ),

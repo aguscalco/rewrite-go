@@ -119,13 +119,14 @@ message TypeParameter {
 message Field {
   UUID id = 6;
   repeated string names = 1;
-  GoType type = 2;
+  Expr type = 2;
   string tag = 3;
   Space prefix = 4;
   Markers markers = 5;
 }
 
 message Method {
+  UUID id = 5;
   string name = 1;
   FuncType type = 2;
   Space prefix = 3;
@@ -222,7 +223,7 @@ message ValueSpec {
   Space prefix = 2;
   Markers markers = 3;
   repeated Ident names = 4;
-  GoType type = 5;
+  Expr type = 5;
   repeated Expr values = 6;
 }
 
@@ -232,7 +233,7 @@ message TypeSpec {
   Markers markers = 3;
   Ident name = 4;
   repeated TypeParamDecl type_params = 5;
-  GoType type = 6;
+  Expr type = 6;
   bool assign = 7;
 }
 

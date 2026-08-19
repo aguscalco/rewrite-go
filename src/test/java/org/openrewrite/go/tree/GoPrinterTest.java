@@ -136,7 +136,7 @@ class GoPrinterTest {
             Space.EMPTY,
             Markers.EMPTY,
             Collections.singletonList(new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "x", null)),
-            new GoType(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, new GoType.Basic("int")),
+            new Ident(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "int", null),
             Collections.singletonList(new BasicLit(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "INT", "42"))
         );
         
@@ -285,7 +285,7 @@ class GoPrinterTest {
                     Space.EMPTY,
                     Markers.EMPTY,
                     Collections.emptyList(),
-                    new GoType(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, new GoType.Basic("int")),
+                    new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "int", null),
                     ""
                 )),
                 Collections.emptyList()
@@ -352,7 +352,7 @@ class GoPrinterTest {
             Space.EMPTY,
             Markers.EMPTY,
             Arrays.asList("a", "b"),
-            new GoType(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, new GoType.Basic("int")),
+            new Ident(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "int", null),
             ""
         );
         
@@ -373,7 +373,7 @@ class GoPrinterTest {
                     Space.EMPTY,
                     Markers.EMPTY,
                     Collections.emptyList(),
-                    new GoType(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, new GoType.Basic("int")),
+                    new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "int", null),
                     ""
                 )),
                 Collections.emptyList()

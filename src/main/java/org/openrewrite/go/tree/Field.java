@@ -33,7 +33,7 @@ public final class Field implements Go {
     
     @With
     @Getter
-    GoType type;
+    Expr type;
     
     @With
     @Getter

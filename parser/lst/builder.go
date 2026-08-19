@@ -163,7 +163,7 @@ func (b *Builder) buildValueSpec(s *ast.ValueSpec) *proto.ValueSpec {
 	}
 
 	if s.Type != nil {
-		vs.Type = b.buildGoType(s.Type)
+		vs.Type = b.buildExpr(s.Type)
 	}
 
 	for _, val := range s.Values {
@@ -185,7 +185,7 @@ func (b *Builder) buildTypeSpec(s *ast.TypeSpec) *proto.TypeSpec {
 	}
 
 	if s.Type != nil {
-		ts.Type = b.buildGoType(s.Type)
+		ts.Type = b.buildExpr(s.Type)
 	}
 
 	return ts
@@ -495,8 +495,169 @@ func (b *Builder) buildExpr(expr ast.Expr) *proto.Expr {
 				},
 			},
 		}
+	case *ast.InterfaceType:
+		return &proto.Expr{
+			Expr: &proto.Expr_InterfaceTypeExpr{
+				InterfaceTypeExpr: b.buildInterfaceTypeExpr(e),
+			},
+		}
+	case *ast.ArrayType:
+		return &proto.Expr{
+			Expr: &proto.Expr_ArrayTypeExpr{
+				ArrayTypeExpr: b.buildArrayTypeExpr(e),
+			},
+		}
+	case *ast.MapType:
+		return &proto.Expr{
+			Expr: &proto.Expr_MapTypeExpr{
+				MapTypeExpr: b.buildMapTypeExpr(e),
+			},
+		}
+	case *ast.ChanType:
+		return &proto.Expr{
+			Expr: &proto.Expr_ChanTypeExpr{
+				ChanTypeExpr: b.buildChanTypeExpr(e),
+			},
+		}
+	case *ast.StructType:
+		return &proto.Expr{
+			Expr: &proto.Expr_StructTypeExpr{
+				StructTypeExpr: b.buildStructTypeExpr(e),
+			},
+		}
+	case *ast.FuncType:
+		return &proto.Expr{
+			Expr: &proto.Expr_FuncTypeExpr{
+				FuncTypeExpr: b.buildFuncTypeExpr(e),
+			},
+		}
 	}
 	return nil
+}
+
+func (b *Builder) buildInterfaceTypeExpr(it *ast.InterfaceType) *proto.InterfaceTypeExpr {
+	ite := &proto.InterfaceTypeExpr{
+		Id:      newUUID(),
+		Prefix:  b.spaceBefore(it.Pos()),
+		Markers: &proto.Markers{Id: newUUID()},
+	}
+
+	if it.Methods != nil {
+		for _, method := range it.Methods.List {
+			ite.Methods = append(ite.Methods, b.buildMethod(method))
+		}
+	}
+
+	return ite
+}
+
+func (b *Builder) buildMethod(field *ast.Field) *proto.Method {
+	method := &proto.Method{
+		Id:      newUUID(),
+		Prefix:  b.spaceBefore(field.Pos()),
+		Markers: &proto.Markers{Id: newUUID()},
+	}
+
+	if len(field.Names) > 0 {
+		method.Name = field.Names[0].Name
+	}
+
+	if field.Type != nil {
+		if ft, ok := field.Type.(*ast.FuncType); ok {
+			method.Type = b.buildFuncType(ft)
+		}
+	}
+
+	return method
+}
+
+func (b *Builder) buildArrayTypeExpr(at *ast.ArrayType) *proto.ArrayTypeExpr {
+	ate := &proto.ArrayTypeExpr{
+		Id:      newUUID(),
+		Prefix:  b.spaceBefore(at.Pos()),
+		Markers: &proto.Markers{Id: newUUID()},
+	}
+
+	if at.Len != nil {
+		ate.Len = b.buildExpr(at.Len)
+	}
+
+	if at.Elt != nil {
+		ate.Elt = b.buildExpr(at.Elt)
+	}
+
+	return ate
+}
+
+func (b *Builder) buildMapTypeExpr(mt *ast.MapType) *proto.MapTypeExpr {
+	mte := &proto.MapTypeExpr{
+		Id:      newUUID(),
+		Prefix:  b.spaceBefore(mt.Pos()),
+		Markers: &proto.Markers{Id: newUUID()},
+	}
+
+	if mt.Key != nil {
+		mte.Key = b.buildExpr(mt.Key)
+	}
+
+	if mt.Value != nil {
+		mte.Value = b.buildExpr(mt.Value)
+	}
+
+	return mte
+}
+
+func (b *Builder) buildChanTypeExpr(ct *ast.ChanType) *proto.ChanTypeExpr {
+	cte := &proto.ChanTypeExpr{
+		Id:      newUUID(),
+		Prefix:  b.spaceBefore(ct.Pos()),
+		Markers: &proto.Markers{Id: newUUID()},
+		Dir:     int32(ct.Dir),
+	}
+
+	if ct.Value != nil {
+		cte.Value = b.buildExpr(ct.Value)
+	}
+
+	return cte
+}
+
+func (b *Builder) buildStructTypeExpr(st *ast.StructType) *proto.StructTypeExpr {
+	ste := &proto.StructTypeExpr{
+		Id:      newUUID(),
+		Prefix:  b.spaceBefore(st.Pos()),
+		Markers: &proto.Markers{Id: newUUID()},
+	}
+
+	if st.Fields != nil {
+		for _, field := range st.Fields.List {
+			ste.Fields = append(ste.Fields, b.buildField(field))
+		}
+	}
+
+	return ste
+}
+
+func (b *Builder) buildFuncTypeExpr(ft *ast.FuncType) *proto.FuncTypeExpr {
+	fte := &proto.FuncTypeExpr{
+		Id:      newUUID(),
+		Prefix:  b.spaceBefore(ft.Pos()),
+		Markers: &proto.Markers{Id: newUUID()},
+	}
+
+	if ft.Params != nil {
+		for _, param := range ft.Params.List {
+			fte.Params = append(fte.Params, b.buildField(param))
+		}
+	}
+
+	if ft.Results != nil {
+		for _, result := range ft.Results.List {
+			fte.Results = append(fte.Results, b.buildField(result))
+		}
+	}
+
+	return fte
 }
 
 func (b *Builder) buildIdent(id *ast.Ident) *proto.Ident {
@@ -639,6 +800,7 @@ func (b *Builder) buildFuncType(ft *ast.FuncType) *proto.FuncType {
 
 func (b *Builder) buildField(field *ast.Field) *proto.Field {
 	f := &proto.Field{
+		Id:      newUUID(),
 		Prefix:  b.spaceBefore(field.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 	}
@@ -648,7 +810,7 @@ func (b *Builder) buildField(field *ast.Field) *proto.Field {
 	}
 
 	if field.Type != nil {
-		f.Type = b.buildGoType(field.Type)
+		f.Type = b.buildExpr(field.Type)
 	}
 
 	if field.Tag != nil {

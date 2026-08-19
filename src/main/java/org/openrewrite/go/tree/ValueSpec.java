@@ -33,7 +33,7 @@ public final class ValueSpec implements Go, Spec {
     
     @With
     @Getter
-    GoType type;
+    Expr type;
     
     @With
     @Getter

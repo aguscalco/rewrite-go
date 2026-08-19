@@ -269,6 +269,118 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                 }
                 
                 @Override
+                public Tree visitInterfaceTypeExpr(InterfaceTypeExpr interfaceTypeExpr, PrintOutputCapture<P> p) {
+                    printSpace(interfaceTypeExpr.getPrefix(), p);
+                    p.out.append("interface");
+                    p.out.append("{");
+                    for (int i = 0; i < interfaceTypeExpr.getMethods().size(); i++) {
+                        if (i > 0) {
+                            p.out.append("; ");
+                        }
+                        visit(interfaceTypeExpr.getMethods().get(i), p);
+                    }
+                    p.out.append("}");
+                    return interfaceTypeExpr;
+                }
+                
+                @Override
+                public Tree visitMethod(Method method, PrintOutputCapture<P> p) {
+                    printSpace(method.getPrefix(), p);
+                    p.out.append(method.getName());
+                    if (method.getType() != null) {
+                        visit(method.getType(), p);
+                    }
+                    return method;
+                }
+                
+                @Override
+                public Tree visitArrayTypeExpr(ArrayTypeExpr arrayTypeExpr, PrintOutputCapture<P> p) {
+                    printSpace(arrayTypeExpr.getPrefix(), p);
+                    p.out.append("[");
+                    if (arrayTypeExpr.getLen() != null) {
+                        visit(arrayTypeExpr.getLen(), p);
+                    }
+                    p.out.append("]");
+                    if (arrayTypeExpr.getElt() != null) {
+                        visit(arrayTypeExpr.getElt(), p);
+                    }
+                    return arrayTypeExpr;
+                }
+                
+                @Override
+                public Tree visitMapTypeExpr(MapTypeExpr mapTypeExpr, PrintOutputCapture<P> p) {
+                    printSpace(mapTypeExpr.getPrefix(), p);
+                    p.out.append("map[");
+                    if (mapTypeExpr.getKey() != null) {
+                        visit(mapTypeExpr.getKey(), p);
+                    }
+                    p.out.append("]");
+                    if (mapTypeExpr.getValue() != null) {
+                        visit(mapTypeExpr.getValue(), p);
+                    }
+                    return mapTypeExpr;
+                }
+                
+                @Override
+                public Tree visitChanTypeExpr(ChanTypeExpr chanTypeExpr, PrintOutputCapture<P> p) {
+                    printSpace(chanTypeExpr.getPrefix(), p);
+                    if (chanTypeExpr.getDir() == 1) {
+                        p.out.append("chan<- ");
+                    } else if (chanTypeExpr.getDir() == 2) {
+                        p.out.append("<-chan ");
+                    } else {
+                        p.out.append("chan ");
+                    }
+                    if (chanTypeExpr.getValue() != null) {
+                        visit(chanTypeExpr.getValue(), p);
+                    }
+                    return chanTypeExpr;
+                }
+                
+                @Override
+                public Tree visitStructTypeExpr(StructTypeExpr structTypeExpr, PrintOutputCapture<P> p) {
+                    printSpace(structTypeExpr.getPrefix(), p);
+                    p.out.append("struct {");
+                    for (int i = 0; i < structTypeExpr.getFields().size(); i++) {
+                        if (i > 0) {
+                            p.out.append("; ");
+                        }
+                        visit(structTypeExpr.getFields().get(i), p);
+                    }
+                    p.out.append("}");
+                    return structTypeExpr;
+                }
+                
+                @Override
+                public Tree visitFuncTypeExpr(FuncTypeExpr funcTypeExpr, PrintOutputCapture<P> p) {
+                    printSpace(funcTypeExpr.getPrefix(), p);
+                    p.out.append("func(");
+                    for (int i = 0; i < funcTypeExpr.getParams().size(); i++) {
+                        if (i > 0) {
+                            p.out.append(", ");
+                        }
+                        visit(funcTypeExpr.getParams().get(i), p);
+                    }
+                    p.out.append(")");
+                    if (!funcTypeExpr.getResults().isEmpty()) {
+                        p.out.append(" ");
+                        if (funcTypeExpr.getResults().size() == 1 && funcTypeExpr.getResults().get(0).getNames().isEmpty()) {
+                            visit(funcTypeExpr.getResults().get(0).getType(), p);
+                        } else {
+                            p.out.append("(");
+                            for (int i = 0; i < funcTypeExpr.getResults().size(); i++) {
+                                if (i > 0) {
+                                    p.out.append(", ");
+                                }
+                                visit(funcTypeExpr.getResults().get(i), p);
+                            }
+                            p.out.append(")");
+                        }
+                    }
+                    return funcTypeExpr;
+                }
+                
+                @Override
                 public Tree visitFuncType(FuncType funcType, PrintOutputCapture<P> p) {
                     printSpace(funcType.getPrefix(), p);
                     p.out.append("(");
