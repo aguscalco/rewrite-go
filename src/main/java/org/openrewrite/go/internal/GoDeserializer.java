@@ -283,6 +283,10 @@ public class GoDeserializer {
             return deserializeStructTypeExpr(proto.getStructTypeExpr());
         } else if (proto.hasFuncTypeExpr()) {
             return deserializeFuncTypeExpr(proto.getFuncTypeExpr());
+        } else if (proto.hasTypeAssertExpr()) {
+            return deserializeTypeAssertExpr(proto.getTypeAssertExpr());
+        } else if (proto.hasStarExpr()) {
+            return deserializeStarExpr(proto.getStarExpr());
         }
         return null;
     }
@@ -434,6 +438,27 @@ public class GoDeserializer {
             toMarkers(proto.getMarkers()),
             deserializeFields(proto.getParamsList()),
             deserializeFields(proto.getResultsList())
+        );
+    }
+    
+    private TypeAssertExpr deserializeTypeAssertExpr(GoProto.TypeAssertExpr proto) {
+        return new TypeAssertExpr(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            proto.hasX() ? deserializeExpr(proto.getX()) : null,
+            proto.hasType() ? deserializeExpr(proto.getType()) : null,
+            proto.hasResolvedType() ? deserializeGoType(proto.getResolvedType()) : null
+        );
+    }
+    
+    private StarExpr deserializeStarExpr(GoProto.StarExpr proto) {
+        return new StarExpr(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            proto.hasX() ? deserializeExpr(proto.getX()) : null,
+            proto.hasType() ? deserializeGoType(proto.getType()) : null
         );
     }
     

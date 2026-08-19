@@ -403,6 +403,26 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                 }
                 
                 @Override
+                public Tree visitTypeAssertExpr(TypeAssertExpr typeAssertExpr, PrintOutputCapture<P> p) {
+                    printSpace(typeAssertExpr.getPrefix(), p);
+                    visit(typeAssertExpr.getX(), p);
+                    p.out.append(".(");
+                    if (typeAssertExpr.getType() != null) {
+                        visit(typeAssertExpr.getType(), p);
+                    }
+                    p.out.append(")");
+                    return typeAssertExpr;
+                }
+                
+                @Override
+                public Tree visitStarExpr(StarExpr starExpr, PrintOutputCapture<P> p) {
+                    printSpace(starExpr.getPrefix(), p);
+                    p.out.append("*");
+                    visit(starExpr.getX(), p);
+                    return starExpr;
+                }
+                
+                @Override
                 public Tree visitFuncType(FuncType funcType, PrintOutputCapture<P> p) {
                     printSpace(funcType.getPrefix(), p);
                     p.out.append("(");

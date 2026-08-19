@@ -191,6 +191,25 @@ public class GoVisitor<P> extends TreeVisitor<Tree, P> {
         return visitGo(pointerTypeExpr, p);
     }
     
+    public Tree visitTypeAssertExpr(TypeAssertExpr typeAssertExpr, P p) {
+        TypeAssertExpr t = typeAssertExpr;
+        if (t.getX() != null) {
+            t = t.withX((Expr) visit(t.getX(), p));
+        }
+        if (t.getType() != null) {
+            t = t.withType((Expr) visit(t.getType(), p));
+        }
+        return t;
+    }
+    
+    public Tree visitStarExpr(StarExpr starExpr, P p) {
+        StarExpr s = starExpr;
+        if (s.getX() != null) {
+            s = s.withX((Expr) visit(s.getX(), p));
+        }
+        return s;
+    }
+    
     public Tree visitFuncType(FuncType funcType, P p) {
         FuncType f = funcType;
         f = f.withParams(ListUtils.map(f.getParams(), param -> (Field) visit(param, p)));

@@ -531,6 +531,12 @@ func (b *Builder) buildExpr(expr ast.Expr) *proto.Expr {
 				FuncTypeExpr: b.buildFuncTypeExpr(e),
 			},
 		}
+	case *ast.TypeAssertExpr:
+		return &proto.Expr{
+			Expr: &proto.Expr_TypeAssertExpr{
+				TypeAssertExpr: b.buildTypeAssertExpr(e),
+			},
+		}
 	}
 	return nil
 }
@@ -658,6 +664,28 @@ func (b *Builder) buildFuncTypeExpr(ft *ast.FuncType) *proto.FuncTypeExpr {
 	}
 
 	return fte
+}
+
+func (b *Builder) buildTypeAssertExpr(ta *ast.TypeAssertExpr) *proto.TypeAssertExpr {
+	tae := &proto.TypeAssertExpr{
+		Id:      newUUID(),
+		Prefix:  b.spaceBefore(ta.Pos()),
+		Markers: &proto.Markers{Id: newUUID()},
+	}
+
+	if ta.X != nil {
+		tae.X = b.buildExpr(ta.X)
+	}
+
+	if ta.Type != nil {
+		tae.Type = b.buildExpr(ta.Type)
+	}
+
+	if tv, ok := b.info.Types[ta]; ok {
+		tae.ResolvedType = b.convertType(tv.Type)
+	}
+
+	return tae
 }
 
 func (b *Builder) buildIdent(id *ast.Ident) *proto.Ident {
