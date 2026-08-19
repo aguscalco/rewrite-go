@@ -209,6 +209,8 @@ public class GoDeserializer {
             return deserializeAssignStmt(proto.getAssignStmt());
         } else if (proto.hasReturnStmt()) {
             return deserializeReturnStmt(proto.getReturnStmt());
+        } else if (proto.hasIfStmt()) {
+            return deserializeIfStmt(proto.getIfStmt());
         }
         return null;
     }
@@ -230,6 +232,18 @@ public class GoDeserializer {
             toSpace(proto.getPrefix()),
             toMarkers(proto.getMarkers()),
             deserializeExprs(proto.getResultsList())
+        );
+    }
+    
+    private IfStmt deserializeIfStmt(GoProto.IfStmt proto) {
+        return new IfStmt(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            proto.hasInit() ? deserializeStmt(proto.getInit()) : null,
+            proto.hasCond() ? deserializeExpr(proto.getCond()) : null,
+            proto.hasBody() ? deserializeBlockStmt(proto.getBody()) : null,
+            proto.hasElseStmt() ? deserializeStmt(proto.getElseStmt()) : null
         );
     }
     

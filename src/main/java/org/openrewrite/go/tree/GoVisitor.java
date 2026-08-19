@@ -120,6 +120,23 @@ public class GoVisitor<P> extends TreeVisitor<Tree, P> {
         return visitGo(returnStmt, p);
     }
     
+    public Tree visitIfStmt(IfStmt ifStmt, P p) {
+        IfStmt i = ifStmt;
+        if (i.getInit() != null) {
+            i = i.withInit((Stmt) visit(i.getInit(), p));
+        }
+        if (i.getCond() != null) {
+            i = i.withCond((Expr) visit(i.getCond(), p));
+        }
+        if (i.getBody() != null) {
+            i = i.withBody((BlockStmt) visit(i.getBody(), p));
+        }
+        if (i.getElseStmt() != null) {
+            i = i.withElseStmt((Stmt) visit(i.getElseStmt(), p));
+        }
+        return i;
+    }
+    
     public Tree visitCallExpr(CallExpr callExpr, P p) {
         CallExpr c = callExpr;
         c = c.withFun((Expr) visit(c.getFun(), p));
