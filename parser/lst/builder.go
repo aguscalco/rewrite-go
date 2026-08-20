@@ -25,10 +25,10 @@ func NewBuilder(fset *token.FileSet, info *types.Info, src []byte) *Builder {
 
 func (b *Builder) BuildFile(file *ast.File) *proto.GoFile {
 	goFile := &proto.GoFile{
-		Id:         newUUID(),
-		Prefix:     b.spaceBefore(file.Pos()),
-		Markers:    &proto.Markers{Id: newUUID()},
-		SourcePath: b.fset.Position(file.Pos()).Filename,
+		Id:          newUUID(),
+		Prefix:      b.spaceBefore(file.Pos()),
+		Markers:     &proto.Markers{Id: newUUID()},
+		SourcePath:  b.fset.Position(file.Pos()).Filename,
 		CharsetName: "UTF-8",
 	}
 

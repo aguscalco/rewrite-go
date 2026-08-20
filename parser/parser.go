@@ -99,7 +99,7 @@ func (p *Parser) ParsePackage(dir string) ([]*proto.GoFile, error) {
 func newUUID() *proto.UUID {
 	id := uuid.New()
 	return &proto.UUID{
-		MostSigBits:  int64(id[0])<<56 | int64(id[1])<<48 | int64(id[2])<<40 | int64(id[3])<<32 |
+		MostSigBits: int64(id[0])<<56 | int64(id[1])<<48 | int64(id[2])<<40 | int64(id[3])<<32 |
 			int64(id[4])<<24 | int64(id[5])<<16 | int64(id[6])<<8 | int64(id[7]),
 		LeastSigBits: int64(id[8])<<56 | int64(id[9])<<48 | int64(id[10])<<40 | int64(id[11])<<32 |
 			int64(id[12])<<24 | int64(id[13])<<16 | int64(id[14])<<8 | int64(id[15]),
