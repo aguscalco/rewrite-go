@@ -44,6 +44,9 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                         for (ImportSpec spec : importDecl.getSpecs()) {
                             visit(spec, p);
                         }
+                        if (!importDecl.getSpecs().isEmpty()) {
+                            p.out.append("\n");
+                        }
                         p.out.append(")");
                     } else if (!importDecl.getSpecs().isEmpty()) {
                         visit(importDecl.getSpecs().get(0), p);
@@ -449,6 +452,42 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                         }
                     }
                     return funcType;
+                }
+                
+                @Override
+                public Tree visitSliceTypeExpr(SliceTypeExpr sliceTypeExpr, PrintOutputCapture<P> p) {
+                    printSpace(sliceTypeExpr.getPrefix(), p);
+                    p.out.append("[]");
+                    if (sliceTypeExpr.getElt() != null) {
+                        visit(sliceTypeExpr.getElt(), p);
+                    }
+                    return sliceTypeExpr;
+                }
+                
+                @Override
+                public Tree visitPointerTypeExpr(PointerTypeExpr pointerTypeExpr, PrintOutputCapture<P> p) {
+                    printSpace(pointerTypeExpr.getPrefix(), p);
+                    p.out.append("*");
+                    if (pointerTypeExpr.getBase() != null) {
+                        visit(pointerTypeExpr.getBase(), p);
+                    }
+                    return pointerTypeExpr;
+                }
+                
+                @Override
+                public Tree visitTypeParamDecl(TypeParamDecl typeParamDecl, PrintOutputCapture<P> p) {
+                    printSpace(typeParamDecl.getPrefix(), p);
+                    for (int i = 0; i < typeParamDecl.getNames().size(); i++) {
+                        if (i > 0) {
+                            p.out.append(", ");
+                        }
+                        p.out.append(typeParamDecl.getNames().get(i));
+                    }
+                    if (typeParamDecl.getConstraint() != null) {
+                        p.out.append(" ");
+                        visit(typeParamDecl.getConstraint(), p);
+                    }
+                    return typeParamDecl;
                 }
                 
                 @Override

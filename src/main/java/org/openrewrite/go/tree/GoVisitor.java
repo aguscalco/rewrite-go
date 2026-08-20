@@ -1,12 +1,14 @@
 package org.openrewrite.go.tree;
 
+import org.openrewrite.SourceFile;
 import org.openrewrite.Tree;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.internal.ListUtils;
 
 public class GoVisitor<P> extends TreeVisitor<Tree, P> {
     
-    public boolean isAcceptable(Tree sourceFile, P p) {
+    @Override
+    public boolean isAcceptable(SourceFile sourceFile, P p) {
         return sourceFile instanceof GoFile;
     }
     
@@ -30,7 +32,11 @@ public class GoVisitor<P> extends TreeVisitor<Tree, P> {
     }
     
     public Tree visitPackageClause(PackageClause packageClause, P p) {
-        return packageClause;
+        PackageClause pc = packageClause;
+        if (pc.getName() != null) {
+            pc = pc.withName((Ident) visit(pc.getName(), p));
+        }
+        return pc;
     }
     
     public Tree visitImportDecl(ImportDecl importDecl, P p) {
@@ -62,6 +68,7 @@ public class GoVisitor<P> extends TreeVisitor<Tree, P> {
             f = f.withRecv((Field) visit(f.getRecv(), p));
         }
         f = f.withName((Ident) visit(f.getName(), p));
+        f = f.withTypeParams(ListUtils.map(f.getTypeParams(), tp -> (TypeParamDecl) visit(tp, p)));
         if (f.getType() != null) {
             f = f.withType((FuncType) visit(f.getType(), p));
         }
@@ -72,11 +79,14 @@ public class GoVisitor<P> extends TreeVisitor<Tree, P> {
     }
     
     public Tree visitGenDecl(GenDecl genDecl, P p) {
-        return visitGo(genDecl, p);
+        GenDecl g = genDecl;
+        g = g.withSpecs(ListUtils.map(g.getSpecs(), spec -> (Spec) visit(spec, p)));
+        return g;
     }
     
     public Tree visitValueSpec(ValueSpec valueSpec, P p) {
         ValueSpec v = valueSpec;
+        v = v.withNames(ListUtils.map(v.getNames(), n -> (Ident) visit(n, p)));
         if (v.getType() != null) {
             v = v.withType((Expr) visit(v.getType(), p));
         }
@@ -86,6 +96,10 @@ public class GoVisitor<P> extends TreeVisitor<Tree, P> {
     
     public Tree visitTypeSpec(TypeSpec typeSpec, P p) {
         TypeSpec t = typeSpec;
+        if (t.getName() != null) {
+            t = t.withName((Ident) visit(t.getName(), p));
+        }
+        t = t.withTypeParams(ListUtils.map(t.getTypeParams(), tp -> (TypeParamDecl) visit(tp, p)));
         if (t.getType() != null) {
             t = t.withType((Expr) visit(t.getType(), p));
         }
@@ -113,11 +127,16 @@ public class GoVisitor<P> extends TreeVisitor<Tree, P> {
     }
     
     public Tree visitAssignStmt(AssignStmt assignStmt, P p) {
-        return visitGo(assignStmt, p);
+        AssignStmt a = assignStmt;
+        a = a.withLhs(ListUtils.map(a.getLhs(), e -> (Expr) visit(e, p)));
+        a = a.withRhs(ListUtils.map(a.getRhs(), e -> (Expr) visit(e, p)));
+        return a;
     }
     
     public Tree visitReturnStmt(ReturnStmt returnStmt, P p) {
-        return visitGo(returnStmt, p);
+        ReturnStmt r = returnStmt;
+        r = r.withResults(ListUtils.map(r.getResults(), e -> (Expr) visit(e, p)));
+        return r;
     }
     
     public Tree visitIfStmt(IfStmt ifStmt, P p) {
@@ -152,43 +171,87 @@ public class GoVisitor<P> extends TreeVisitor<Tree, P> {
     }
     
     public Tree visitBinaryExpr(BinaryExpr binaryExpr, P p) {
-        return visitGo(binaryExpr, p);
+        BinaryExpr b = binaryExpr;
+        if (b.getX() != null) {
+            b = b.withX((Expr) visit(b.getX(), p));
+        }
+        if (b.getY() != null) {
+            b = b.withY((Expr) visit(b.getY(), p));
+        }
+        return b;
     }
     
     public Tree visitUnaryExpr(UnaryExpr unaryExpr, P p) {
-        return visitGo(unaryExpr, p);
+        UnaryExpr u = unaryExpr;
+        if (u.getX() != null) {
+            u = u.withX((Expr) visit(u.getX(), p));
+        }
+        return u;
     }
     
     public Tree visitInterfaceTypeExpr(InterfaceTypeExpr interfaceTypeExpr, P p) {
-        return visitGo(interfaceTypeExpr, p);
+        InterfaceTypeExpr i = interfaceTypeExpr;
+        i = i.withMethods(ListUtils.map(i.getMethods(), m -> (Method) visit(m, p)));
+        return i;
     }
     
     public Tree visitFuncTypeExpr(FuncTypeExpr funcTypeExpr, P p) {
-        return visitGo(funcTypeExpr, p);
+        FuncTypeExpr f = funcTypeExpr;
+        f = f.withParams(ListUtils.map(f.getParams(), param -> (Field) visit(param, p)));
+        f = f.withResults(ListUtils.map(f.getResults(), result -> (Field) visit(result, p)));
+        return f;
     }
     
     public Tree visitArrayTypeExpr(ArrayTypeExpr arrayTypeExpr, P p) {
-        return visitGo(arrayTypeExpr, p);
+        ArrayTypeExpr a = arrayTypeExpr;
+        if (a.getLen() != null) {
+            a = a.withLen((Expr) visit(a.getLen(), p));
+        }
+        if (a.getElt() != null) {
+            a = a.withElt((Expr) visit(a.getElt(), p));
+        }
+        return a;
     }
     
     public Tree visitSliceTypeExpr(SliceTypeExpr sliceTypeExpr, P p) {
-        return visitGo(sliceTypeExpr, p);
+        SliceTypeExpr s = sliceTypeExpr;
+        if (s.getElt() != null) {
+            s = s.withElt((Expr) visit(s.getElt(), p));
+        }
+        return s;
     }
     
     public Tree visitMapTypeExpr(MapTypeExpr mapTypeExpr, P p) {
-        return visitGo(mapTypeExpr, p);
+        MapTypeExpr m = mapTypeExpr;
+        if (m.getKey() != null) {
+            m = m.withKey((Expr) visit(m.getKey(), p));
+        }
+        if (m.getValue() != null) {
+            m = m.withValue((Expr) visit(m.getValue(), p));
+        }
+        return m;
     }
     
     public Tree visitChanTypeExpr(ChanTypeExpr chanTypeExpr, P p) {
-        return visitGo(chanTypeExpr, p);
+        ChanTypeExpr c = chanTypeExpr;
+        if (c.getValue() != null) {
+            c = c.withValue((Expr) visit(c.getValue(), p));
+        }
+        return c;
     }
     
     public Tree visitStructTypeExpr(StructTypeExpr structTypeExpr, P p) {
-        return visitGo(structTypeExpr, p);
+        StructTypeExpr s = structTypeExpr;
+        s = s.withFields(ListUtils.map(s.getFields(), field -> (Field) visit(field, p)));
+        return s;
     }
     
     public Tree visitPointerTypeExpr(PointerTypeExpr pointerTypeExpr, P p) {
-        return visitGo(pointerTypeExpr, p);
+        PointerTypeExpr pt = pointerTypeExpr;
+        if (pt.getBase() != null) {
+            pt = pt.withBase((Expr) visit(pt.getBase(), p));
+        }
+        return pt;
     }
     
     public Tree visitTypeAssertExpr(TypeAssertExpr typeAssertExpr, P p) {
@@ -226,6 +289,10 @@ public class GoVisitor<P> extends TreeVisitor<Tree, P> {
     }
     
     public Tree visitMethod(Method method, P p) {
-        return visitGo(method, p);
+        Method m = method;
+        if (m.getType() != null) {
+            m = m.withType((FuncType) visit(m.getType(), p));
+        }
+        return m;
     }
 }
