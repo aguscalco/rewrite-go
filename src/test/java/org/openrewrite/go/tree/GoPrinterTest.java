@@ -407,4 +407,52 @@ class GoPrinterTest {
         
         assertEquals("package main\nfunc add(a, b  int) int  {\n\treturn a +  b}", capture.getOut());
     }
+
+    private String print(Go node) {
+        GoPrinter<Integer> printer = new GoPrinter<>();
+        PrintOutputCapture<Integer> capture = new PrintOutputCapture<>(0);
+        printer.visit(node, capture);
+        return capture.getOut();
+    }
+
+    private static Ident id(String name) {
+        return new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, name, null);
+    }
+
+    @Test
+    void printSliceTypeExpr() {
+        assertEquals("[]string", print(
+            new SliceTypeExpr(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, id("string"))));
+    }
+
+    @Test
+    void printPointerTypeExpr() {
+        assertEquals("*MyError", print(
+            new PointerTypeExpr(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, id("MyError"))));
+    }
+
+    @Test
+    void printSliceOfPointers() {
+        assertEquals("[]*MyError", print(new SliceTypeExpr(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY,
+            new PointerTypeExpr(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, id("MyError")))));
+    }
+
+    @Test
+    void printTypeParamDecl() {
+        GoType any = new GoType(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, new GoType.Basic("any"));
+        assertEquals("T, U any", print(new TypeParamDecl(
+            UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, Arrays.asList("T", "U"), any)));
+    }
+
+    @Test
+    void printGroupedImportsClosesOnItsOwnLine() {
+        ImportSpec fmtSpec = new ImportSpec(UUID.randomUUID(), Space.build("\n\t"), Markers.EMPTY, null,
+            new BasicLit(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "STRING", "\"fmt\""));
+        ImportSpec osSpec = new ImportSpec(UUID.randomUUID(), Space.build("\n\t"), Markers.EMPTY, null,
+            new BasicLit(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "STRING", "\"os\""));
+        ImportDecl decl = new ImportDecl(UUID.randomUUID(), Space.build("\n"), Markers.EMPTY,
+            Arrays.asList(fmtSpec, osSpec), true, Space.EMPTY);
+
+        assertEquals("\nimport (\n\t\"fmt\"\n\t\"os\"\n)", print(decl));
+    }
 }
