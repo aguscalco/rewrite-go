@@ -6,3 +6,4 @@ description: Apply Go best practices and idiomatic patterns.
 recipeList:
   - org.openrewrite.go.OrganizeImports
   - org.openrewrite.go.MigrateIoutilToIO
+  - org.openrewrite.go.InterfaceToAny
