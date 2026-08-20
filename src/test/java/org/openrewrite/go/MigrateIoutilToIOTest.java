@@ -17,25 +17,86 @@ import static org.junit.jupiter.api.Assertions.*;
 class MigrateIoutilToIOTest {
     
     @Test
-    void migrateIoutilImportToIO() {
-        ImportSpec ioutilSpec = new ImportSpec(
-            UUID.randomUUID(),
-            Space.build("\n\t"),
-            Markers.EMPTY,
-            null,
-            new BasicLit(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "STRING", "\"io/ioutil\"")
-        );
-        
+    void ioutilImportBecomesIoWhenUsageMapsToIo() {
+        GoFile result = runWith("ReadAll");
+        assertEquals(1, result.getImports().size());
+        assertEquals("\"io\"", result.getImports().get(0).getSpecs().get(0).getPath().getValue());
+    }
+    
+    @Test
+    void ioutilImportBecomesOsWhenUsageMapsToOs() {
+        GoFile result = runWith("ReadFile");
+        assertEquals(1, result.getImports().size());
+        assertEquals("\"os\"", result.getImports().get(0).getSpecs().get(0).getPath().getValue());
+    }
+    
+    @Test
+    void ioutilImportIsLeftAloneWhenThereAreNoUsages() {
+        GoFile file = fileWithIoutilImport(null);
+        GoFile result = (GoFile) new MigrateIoutilToIO().getVisitor().visit(file, new InMemoryExecutionContext());
+        assertEquals(1, result.getImports().size());
+        assertEquals("\"io/ioutil\"", result.getImports().get(0).getSpecs().get(0).getPath().getValue());
+    }
+    
+    private GoFile runWith(String ioutilMethod) {
+        GoFile file = fileWithIoutilImport(ioutilMethod);
+        return (GoFile) new MigrateIoutilToIO().getVisitor().visit(file, new InMemoryExecutionContext());
+    }
+    
+    /** package main; import "io/ioutil"; func main() { ioutil.<method>(r) } */
+    private GoFile fileWithIoutilImport(String ioutilMethod) {
         ImportDecl importDecl = new ImportDecl(
             UUID.randomUUID(),
             Space.build("\n"),
             Markers.EMPTY,
-            Collections.singletonList(ioutilSpec),
+            Collections.singletonList(new ImportSpec(
+                UUID.randomUUID(),
+                Space.build("\n\t"),
+                Markers.EMPTY,
+                null,
+                new BasicLit(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "STRING", "\"io/ioutil\"")
+            )),
             false,
             Space.EMPTY
         );
         
-        GoFile file = new GoFile(
+        java.util.List<Stmt> stmts = new java.util.ArrayList<>();
+        if (ioutilMethod != null) {
+            stmts.add(new ExprStmt(
+                UUID.randomUUID(),
+                Space.build("\n\t"),
+                Markers.EMPTY,
+                new CallExpr(
+                    UUID.randomUUID(),
+                    Space.EMPTY,
+                    Markers.EMPTY,
+                    new SelectorExpr(
+                        UUID.randomUUID(),
+                        Space.EMPTY,
+                        Markers.EMPTY,
+                        new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "ioutil", null),
+                        new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, ioutilMethod, null),
+                        null
+                    ),
+                    Collections.singletonList(new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "r", null)),
+                    false,
+                    null
+                )
+            ));
+        }
+        
+        FuncDecl funcDecl = new FuncDecl(
+            UUID.randomUUID(),
+            Space.build("\n"),
+            Markers.EMPTY,
+            null,
+            new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "main", null),
+            Collections.emptyList(),
+            new FuncType(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()),
+            new BlockStmt(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, stmts, Space.EMPTY)
+        );
+        
+        return new GoFile(
             UUID.randomUUID(),
             Space.EMPTY,
             Markers.EMPTY,
@@ -49,22 +110,11 @@ class MigrateIoutilToIOTest {
                 new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "main", null)
             ),
             Collections.singletonList(importDecl),
-            Collections.emptyList(),
+            Collections.singletonList(funcDecl),
             Space.EMPTY,
             null,
             null
         );
-        
-        MigrateIoutilToIO recipe = new MigrateIoutilToIO();
-        ExecutionContext ctx = new InMemoryExecutionContext();
-        
-        Tree result = recipe.getVisitor().visit(file, ctx);
-        
-        GoFile resultFile = (GoFile) result;
-        assertEquals(1, resultFile.getImports().size());
-        
-        ImportSpec resultSpec = resultFile.getImports().get(0).getSpecs().get(0);
-        assertEquals("\"io\"", resultSpec.getPath().getValue());
     }
     
     @Test
@@ -153,7 +203,7 @@ class MigrateIoutilToIOTest {
     }
     
     @Test
-    void migrateIoutilReadFileToIOReadFile() {
+    void migrateIoutilReadFileToOSReadFile() {
         SelectorExpr selector = new SelectorExpr(
             UUID.randomUUID(),
             Space.EMPTY,
@@ -233,7 +283,7 @@ class MigrateIoutilToIOTest {
         SelectorExpr resultSelector = (SelectorExpr) resultCall.getFun();
         
         Ident pkgIdent = (Ident) resultSelector.getX();
-        assertEquals("io", pkgIdent.getName());
+        assertEquals("os", pkgIdent.getName());
         assertEquals("ReadFile", resultSelector.getSel().getName());
     }
     

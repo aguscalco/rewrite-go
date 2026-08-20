@@ -79,7 +79,7 @@ class WrapErrorWithContextTest {
             null
         );
         
-        WrapErrorWithContext recipe = new WrapErrorWithContext();
+        WrapErrorWithContext recipe = new WrapErrorWithContext("failed to do something");
         ExecutionContext ctx = new InMemoryExecutionContext();
         
         Tree result = recipe.getVisitor().visit(file, ctx);
@@ -107,7 +107,7 @@ class WrapErrorWithContextTest {
         
         assertEquals(2, callExpr.getArgs().size());
         BasicLit formatString = (BasicLit) callExpr.getArgs().get(0);
-        assertTrue(formatString.getValue().contains("%w"));
+        assertEquals("\"failed to do something: %w\"", formatString.getValue());
         
         Ident errArg = (Ident) callExpr.getArgs().get(1);
         assertEquals("err", errArg.getName());
@@ -176,7 +176,7 @@ class WrapErrorWithContextTest {
             null
         );
         
-        WrapErrorWithContext recipe = new WrapErrorWithContext();
+        WrapErrorWithContext recipe = new WrapErrorWithContext("failed to do something");
         ExecutionContext ctx = new InMemoryExecutionContext();
         
         Tree result = recipe.getVisitor().visit(file, ctx);
@@ -268,7 +268,7 @@ class WrapErrorWithContextTest {
             null
         );
         
-        WrapErrorWithContext recipe = new WrapErrorWithContext();
+        WrapErrorWithContext recipe = new WrapErrorWithContext("failed to do something");
         ExecutionContext ctx = new InMemoryExecutionContext();
         
         Tree result = recipe.getVisitor().visit(file, ctx);

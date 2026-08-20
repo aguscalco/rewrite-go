@@ -4,6 +4,7 @@ import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
 import org.openrewrite.Tree;
 import org.openrewrite.TreeVisitor;
+import org.openrewrite.go.internal.GoImports;
 import org.openrewrite.go.tree.*;
 
 import java.util.Arrays;
@@ -23,8 +24,18 @@ public class UseErrorsIs extends Recipe {
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         return new GoVisitor<ExecutionContext>() {
+            private boolean usedErrors;
+            
+            @Override
+            public Tree visitGoFile(GoFile goFile, ExecutionContext ctx) {
+                usedErrors = false;
+                GoFile g = (GoFile) super.visitGoFile(goFile, ctx);
+                return usedErrors ? GoImports.addImport(g, "errors") : g;
+            }
+            
+            @Override
             public Tree visitBinaryExpr(BinaryExpr binaryExpr, ExecutionContext ctx) {
-                BinaryExpr b = binaryExpr;
+                BinaryExpr b = (BinaryExpr) super.visitBinaryExpr(binaryExpr, ctx);
                 
                 // Check if this is an equality comparison (== or !=)
                 if ("==".equals(b.getOp()) || "!=".equals(b.getOp())) {
@@ -67,6 +78,7 @@ public class UseErrorsIs extends Recipe {
             }
             
             private CallExpr convertToErrorsIs(BinaryExpr binaryExpr) {
+                usedErrors = true;
                 // Create errors.Is(err, target)
                 Ident errorsIdent = new Ident(
                     Tree.randomId(),

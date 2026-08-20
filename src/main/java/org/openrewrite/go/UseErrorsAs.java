@@ -4,6 +4,7 @@ import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
 import org.openrewrite.Tree;
 import org.openrewrite.TreeVisitor;
+import org.openrewrite.go.internal.GoImports;
 import org.openrewrite.go.tree.*;
 
 import java.util.Arrays;
@@ -23,8 +24,18 @@ public class UseErrorsAs extends Recipe {
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         return new GoVisitor<ExecutionContext>() {
+            private boolean usedErrors;
+            
+            @Override
+            public Tree visitGoFile(GoFile goFile, ExecutionContext ctx) {
+                usedErrors = false;
+                GoFile g = (GoFile) super.visitGoFile(goFile, ctx);
+                return usedErrors ? GoImports.addImport(g, "errors") : g;
+            }
+            
+            @Override
             public Tree visitAssignStmt(AssignStmt assignStmt, ExecutionContext ctx) {
-                AssignStmt a = assignStmt;
+                AssignStmt a = (AssignStmt) super.visitAssignStmt(assignStmt, ctx);
                 
                 // Check if this is a type assertion assignment: target, ok := err.(*MyError)
                 if (":=".equals(a.getTok()) && a.getLhs().size() == 2 && a.getRhs().size() == 1) {
@@ -49,6 +60,7 @@ public class UseErrorsAs extends Recipe {
             }
             
             private AssignStmt convertToErrorsAs(AssignStmt assignStmt, TypeAssertExpr typeAssert) {
+                usedErrors = true;
                 // Create errors.As(err, &target)
                 Ident errorsIdent = new Ident(
                     Tree.randomId(),

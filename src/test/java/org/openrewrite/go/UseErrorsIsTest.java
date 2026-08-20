@@ -270,4 +270,51 @@ class UseErrorsIsTest {
         Ident leftIdent = (Ident) resultComparison.getX();
         assertEquals("x", leftIdent.getName());
     }
+
+    @Test
+    void addsTheErrorsImportWhenAConversionHappens() {
+        GoFile result = (GoFile) new UseErrorsIs().getVisitor()
+            .visit(fileComparing("err", "==", "io", "EOF"), new InMemoryExecutionContext());
+
+        assertEquals(1, result.getImports().size());
+        assertEquals("\"errors\"", result.getImports().get(0).getSpecs().get(0).getPath().getValue());
+    }
+
+    @Test
+    void doesNotAddTheErrorsImportWhenNothingIsConverted() {
+        GoFile result = (GoFile) new UseErrorsIs().getVisitor()
+            .visit(fileComparing("count", "==", "pkg", "Limit"), new InMemoryExecutionContext());
+
+        assertTrue(result.getImports().isEmpty());
+    }
+
+    /** package main; func main() { if <lhs> <op> <pkg>.<sel> {} } */
+    private GoFile fileComparing(String lhs, String op, String pkg, String sel) {
+        BinaryExpr comparison = new BinaryExpr(
+            UUID.randomUUID(), Space.EMPTY, Markers.EMPTY,
+            new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, lhs, null),
+            op,
+            new SelectorExpr(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY,
+                new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, pkg, null),
+                new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, sel, null), null),
+            null);
+
+        IfStmt ifStmt = new IfStmt(UUID.randomUUID(), Space.build("\n\t"), Markers.EMPTY, null, comparison,
+            new BlockStmt(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, Collections.emptyList(), Space.EMPTY),
+            null);
+
+        FuncDecl funcDecl = new FuncDecl(
+            UUID.randomUUID(), Space.build("\n"), Markers.EMPTY, null,
+            new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "main", null),
+            Collections.emptyList(),
+            new FuncType(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()),
+            new BlockStmt(UUID.randomUUID(), Space.build(" "), Markers.EMPTY,
+                Collections.singletonList(ifStmt), Space.EMPTY));
+
+        return new GoFile(
+            UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, Paths.get("test.go"), StandardCharsets.UTF_8, false,
+            new PackageClause(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY,
+                new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "main", null)),
+            Collections.emptyList(), Collections.singletonList(funcDecl), Space.EMPTY, null, null);
+    }
 }
