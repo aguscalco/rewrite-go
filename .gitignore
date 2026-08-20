@@ -40,3 +40,6 @@ target/
 
 # Logs
 *.log
+
+# WAVE tooling state
+.wave/
