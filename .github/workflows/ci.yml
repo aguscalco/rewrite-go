@@ -64,6 +64,26 @@ jobs:
           java-version: '21'
           distribution: temurin
 
+      # GoParserTest drives the real parser binary. Without it the test skips and the
+      # Java-to-Go bridge goes uncovered, so build it before running the suite.
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+          cache-dependency-path: parser/go.sum
+
+      - name: Install protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          version: '25.3'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build the parser binary
+        run: |
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.33.0
+          cd parser
+          protoc --go_out=. --go_opt=paths=source_relative proto/go.proto
+          go build -o rewrite-go-parser ./cmd/parser
+
       - uses: gradle/actions/setup-gradle@v4
 
       - name: Build

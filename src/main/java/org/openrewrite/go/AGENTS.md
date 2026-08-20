@@ -16,6 +16,8 @@ The recipe layer — the public surface of the module. Each class here is one `R
 | `UseErrorsAs.java` | `t, ok := err.(*T)` → `errors.As(err, &t)` | |
 | `UseSlicesPackage.java` | `sort.Slice` → `slices.Sort` | drops the `less` func without analyzing it |
 
+`GoParser.java` also lives here — it is the `org.openrewrite.Parser` implementation, not a recipe. It shells out to the `rewrite-go-parser` binary; see the root `AGENTS.md` for the protocol.
+
 Declarative composites live one directory over, in `../../../../resources/META-INF/rewrite/go.yml`. Today that file declares a single recipe, `org.openrewrite.go.BestPractices`, listing only `OrganizeImports` and `MigrateIoutilToIO` — the five recipes added since have **not** been added to it. Update `go.yml` when you add a recipe that belongs in the best-practices set.
 
 ## Conventions
@@ -49,7 +51,7 @@ public class InterfaceToAny extends Recipe {
 - **Matching is name-based and heuristic, not type-based.** `UseErrorsIs` and `UseErrorsAs` trigger on identifiers literally named `err` or `e`, and treat a right-hand identifier as a sentinel only if it starts with `Err` or equals `EOF`. Type attribution exists (`Expr.getType()`) but is unused. False positives and false negatives are expected; do not assume a recipe is semantically safe.
 - **Negation is faked.** `UseErrorsIs` models `!errors.Is(...)` as a `CallExpr` whose `fun` is an `Ident` named `"!"`, because there is no unary-expression construction path. Prefer `UnaryExpr` if you extend this.
 - **`UseSlicesPackage` drops the comparator.** `sort.Slice(x, less)` becomes `slices.Sort(x)` without analyzing `less`, so a non-natural ordering is silently changed. It is only correct for comparators that sort ascending by natural order.
-- **Recipes cannot be run against real `.go` files.** No `Parser` implementation exists. See the root `AGENTS.md`.
+- **`GoParser` needs the parser binary built.** `cd parser && go build -o rewrite-go-parser ./cmd/parser`. Without it, `GoParserTest` skips and anything driving `GoParser` throws with build instructions.
 - **`GoPrinter` prints only the first spec of an ungrouped `ImportDecl`.** If you build import declarations by hand rather than through `GoImports`, set `grouped` whenever there is more than one spec or the rest are dropped on print.
 
 ## Adding a Recipe

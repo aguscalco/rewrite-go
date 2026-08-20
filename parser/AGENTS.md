@@ -10,9 +10,15 @@ Go-native parser that turns `.go` source into a protobuf LST using the standard 
 - `parser_test.go` — 16 `TestParseXxx` functions, plain stdlib `testing`, no assertion library. Each parses a Go source literal and inspects the proto tree field by field.
 - `go.mod` — Go 1.21. Only two deps: `google/uuid`, `google.golang.org/protobuf`.
 
-## This Is a Library, Not a Binary
+## Library Plus One Binary
 
-`package parser` — there is **no `main`**, no CLI, no serialization to stdout. Nothing here emits the proto bytes the Java side would need. The Java↔Go bridge does not exist on either end (see the root `AGENTS.md`). If you are asked to "wire up the parser," this is where the missing `cmd/` entrypoint belongs.
+`package parser` is a library. The executable lives in `cmd/parser` and is the Java side's entry point:
+
+```bash
+cd parser && go build -o rewrite-go-parser ./cmd/parser
+```
+
+It reads a batch of sources from stdin and writes one serialized `proto.GoFile` per source to stdout, in order. Both directions are length-prefixed; responses carry a status byte so a single unparseable file fails alone rather than taking down the batch. The framing is documented at the top of `cmd/parser/main.go` — **change it there and in `GoParser.java` together, or the two silently disagree.**
 
 ## Pitfalls
 
