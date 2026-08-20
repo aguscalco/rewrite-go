@@ -11,10 +11,12 @@ Just as rewrite-java enables migrations from Java 17 → 25, rewrite-go enables 
 ### ✅ Implemented Features
 
 #### 1. Go Language Support
-- **Parser**: Full Go 1.21+ parsing with type information
-- **LST (Lossless Semantic Tree)**: Complete Go AST representation
-- **Printer**: Format-preserving code generation
-- **Visitor Pattern**: Tree traversal for transformations
+- **Parser**: Go 1.21+ parsing via `go/parser` and `go/types`
+- **LST**: Go AST representation covering declarations, statements, expressions, and type expressions
+- **Printer**: Java-side `GoPrinter` and Go-side `printer` package
+- **Visitor Pattern**: `GoVisitor` traversal for transformations
+
+**Known gaps.** Type attribution is single-file — the parser runs `go/types` with a nil importer, so imported symbols are not resolved. Comments are not carried through the LST. The Go-side parse→print round trip is not yet byte-exact (see `parser/printer/roundtrip_test.go`). There is no `Parser` implementation on the Java side yet, so recipes cannot be run against `.go` files end to end; they are exercised against hand-built LSTs.
 
 #### 2. Core Recipes
 
@@ -74,11 +76,14 @@ Just as rewrite-java enables migrations from Java 17 → 25, rewrite-go enables 
 - **Purpose**: Migrate deprecated `io/ioutil` to `io` and `os` (Go 1.16+)
 - **Behavior**:
   - `ioutil.ReadAll` → `io.ReadAll`
-  - `ioutil.ReadFile` → `io.ReadFile`
-  - `ioutil.WriteFile` → `os.WriteFile`
-  - `ioutil.ReadDir` → `os.ReadDir`
   - `ioutil.NopCloser` → `io.NopCloser`
   - `ioutil.Discard` → `io.Discard`
+  - `ioutil.ReadFile` → `os.ReadFile`
+  - `ioutil.WriteFile` → `os.WriteFile`
+  - `ioutil.ReadDir` → `os.ReadDir`
+  - `ioutil.TempDir` → `os.MkdirTemp`
+  - `ioutil.TempFile` → `os.CreateTemp`
+  - The `io/ioutil` import is replaced by whichever of `io` / `os` the rewritten call sites actually use.
 - **Example**:
   ```go
   // Before
@@ -87,17 +92,36 @@ Just as rewrite-java enables migrations from Java 17 → 25, rewrite-go enables 
   data, err := ioutil.ReadFile("file.txt")
   
   // After
-  import "io"
+  import "os"
   
-  data, err := io.ReadFile("file.txt")
+  data, err := os.ReadFile("file.txt")
   ```
+
+##### InterfaceToAny
+- **Purpose**: Replace the empty `interface{}` with `any` (Go 1.18+)
+- **Behavior**: Rewrites `interface{}` with no methods to `any`; interfaces with methods are left alone.
+
+##### UseErrorsIs
+- **Purpose**: Replace direct error comparison with `errors.Is`
+- **Behavior**: `err == target` → `errors.Is(err, target)`; `err != target` → the negated form. Adds the `errors` import.
+- **Limitation**: Matches on identifiers named `err`/`e` compared against a selector or an identifier starting with `Err`/`EOF`. It does not use type attribution, so it both misses and over-matches.
+
+##### UseErrorsAs
+- **Purpose**: Replace type assertions on errors with `errors.As`
+- **Behavior**: `target, ok := err.(*MyError)` → `errors.As(err, &target)`. Adds the `errors` import.
+- **Limitation**: Same name-based matching as `UseErrorsIs`.
+
+##### UseSlicesPackage
+- **Purpose**: Replace manual slice operations with the `slices` package (Go 1.21+)
+- **Behavior**: `sort.Slice` → `slices.Sort`, `sort.SliceStable` → `slices.SortStable`. Adds `slices` and removes `sort` when no other `sort.*` call remains.
+- **Limitation**: The comparator argument is dropped without analysis, so this is only correct for comparators that sort ascending by natural order.
 
 ### 🚧 Planned Features
 
 #### Go Version Migrations
 
 ##### Go 1.16 → 1.17+
-- [ ] `interface{}` → `any` (Go 1.18+)
+- [x] `interface{}` → `any` (Go 1.18+)
 - [ ] Embed package usage
 - [ ] `go:embed` directive support
 
@@ -107,7 +131,7 @@ Just as rewrite-java enables migrations from Java 17 → 25, rewrite-go enables 
 - [ ] `any` type alias usage
 
 ##### Go 1.18 → 1.21+
-- [ ] `slices` package migration (from `golang.org/x/exp/slices`)
+- [x] `slices` package migration (`sort.Slice` → `slices.Sort`)
 - [ ] `maps` package migration (from `golang.org/x/exp/maps`)
 - [ ] `log/slog` migration (from third-party structured logging)
 - [ ] `errors.Join` usage patterns
@@ -118,8 +142,8 @@ Just as rewrite-java enables migrations from Java 17 → 25, rewrite-go enables 
 - [ ] `net/http` routing enhancements
 
 #### Error Handling Patterns
-- [ ] Use `errors.Is` instead of `==` comparison
-- [ ] Use `errors.As` instead of type assertions
+- [x] Use `errors.Is` instead of `==` comparison
+- [x] Use `errors.As` instead of type assertions
 - [ ] Wrap errors with context (multi-level)
 - [ ] Remove `errors.Wrap` (pkg/errors) → `fmt.Errorf`
 
@@ -183,8 +207,8 @@ Just as rewrite-java enables migrations from Java 17 → 25, rewrite-go enables 
 | **Security Fixes** | ✅ OWASP, CVE patches | 🚧 Security patterns | Planned |
 | **Performance** | ✅ Optimization recipes | 🚧 Performance patterns | Planned |
 | **Code Style** | ✅ Checkstyle, Spotless | 🚧 Go fmt, golangci-lint | Planned |
-| **Type System** | ✅ Full type attribution | ✅ Full type attribution | Complete |
-| **Format Preservation** | ✅ Lossless | ✅ Lossless | Complete |
+| **Type System** | ✅ Full type attribution | 🚧 Single-file only | Partial |
+| **Format Preservation** | ✅ Lossless | 🚧 Round trip incomplete | In progress |
 | **Build Tools** | ✅ Maven, Gradle | ✅ Go modules | Complete |
 
 ## What We Can Do Today
@@ -192,9 +216,13 @@ Just as rewrite-java enables migrations from Java 17 → 25, rewrite-go enables 
 ### ✅ Supported Migrations
 
 1. **Go 1.15 → 1.16+**: `io/ioutil` deprecation
-2. **Error Handling**: Basic error wrapping with context
-3. **Code Organization**: Import sorting and grouping
-4. **Custom Recipes**: Build your own Go transformations
+2. **Go 1.18+**: `interface{}` → `any`
+3. **Go 1.21+**: `sort.Slice` → `slices.Sort`
+4. **Error Handling**: wrapping with context, `errors.Is`, `errors.As`
+5. **Code Organization**: Import sorting and grouping
+6. **Custom Recipes**: Build your own Go transformations
+
+All of the above operate on an LST you construct or deserialize yourself — see the "Known gaps" note above.
 
 ### 🎯 Use Cases
 
@@ -222,12 +250,15 @@ Just as rewrite-java enables migrations from Java 17 → 25, rewrite-go enables 
 
 ## Roadmap
 
-### Phase 1: Foundation (Complete ✅)
-- [x] Go parser with type information
+### Phase 1: Foundation (In progress 🚧)
+- [x] Go parser with single-file type information
 - [x] LST representation
-- [x] Basic recipes (imports, errors, ioutil)
+- [x] Basic recipes (imports, errors, ioutil, slices, any)
 - [x] Test infrastructure
 - [x] Maven and Gradle support
+- [ ] Java↔Go bridge (a `Parser` implementation and a parser binary)
+- [ ] Byte-exact parse→print round trip
+- [ ] Comment preservation
 
 ### Phase 2: Go Version Migrations (Next)
 - [ ] `interface{}` → `any` (Go 1.18+)
