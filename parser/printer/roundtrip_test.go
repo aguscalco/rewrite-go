@@ -9,43 +9,67 @@ import (
 // TestRoundTrip is the acceptance criterion for lossless formatting: parsing a file and
 // printing it back must reproduce the source byte for byte.
 //
-// It does not pass yet. Prefix capture in lst.Builder no longer swallows real source tokens,
-// but three problems remain, each of which needs builder and printer to agree:
-//
-//  1. Keyword spacing is emitted twice. The printer writes "package ", "func ", "import "
-//     with a trailing space, and the following node's prefix carries that same space.
-//     One side has to own it -- the prefix should, so the printer should drop the trailing spaces.
-//  2. Import grouping is lost. Builder.BuildFile walks the flattened file.Imports and wraps
-//     each spec in its own ImportDecl, then the declaration loop emits the import GenDecl
-//     again as an empty "import ()". Imports should be built from file.Decls instead.
-//  3. Nested nodes starting at the same offset each capture the same whitespace run, so a
-//     statement's indentation is printed once per nesting level. Only the outermost node at
-//     a given offset should own the prefix.
-//
-// Remove the Skip once those are addressed.
+// Prefixes carry every gap between tokens, and lst.Builder keeps a cursor so a token is
+// accounted for exactly once. Anything the printer writes literally -- keywords,
+// punctuation, separators -- the builder must consume, or it leaks into the next prefix
+// and gets printed twice. Add a case here whenever you teach the builder a new construct.
 func TestRoundTrip(t *testing.T) {
-	t.Skip("lossless round trip not yet implemented -- see the comment above")
-
-	src := `package main
-
-import (
-	"fmt"
-	"os"
-)
-
-func main() {
-	fmt.Println("hi")
-	os.Exit(0)
-}
-`
-	p := parser.New()
-	file, err := p.ParseSource("test.go", []byte(src))
-	if err != nil {
-		t.Fatalf("ParseSource failed: %v", err)
+	cases := []struct {
+		name string
+		src  string
+	}{
+		{"package only", "package main\n"},
+		{"single import", "package main\n\nimport \"fmt\"\n"},
+		{"grouped imports", "package main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n)\n"},
+		{"aliased import", "package main\n\nimport (\n\tf \"fmt\"\n)\n"},
+		{"empty func", "package main\n\nfunc main() {\n}\n"},
+		{"calls", "package main\n\nfunc main() {\n\tfmt.Println(\"hi\")\n\tos.Exit(0)\n}\n"},
+		{"params and result", "package main\n\nfunc greet(name string) string {\n\treturn name\n}\n"},
+		{"multiple params", "package main\n\nfunc add(a int, b int) int {\n\treturn a\n}\n"},
+		{"multi arg call", "package main\n\nfunc main() {\n\tfmt.Sprintf(\"%s %s\", a, b)\n}\n"},
+		{"assignment", "package main\n\nfunc main() {\n\tx := compute()\n}\n"},
+		{"var decl", "package main\n\nvar x int\n"},
+		{"grouped var decl", "package main\n\nvar (\n\tx int\n\ty string\n)\n"},
+		{"method", "package main\n\nfunc (p Point) X() int {\n\treturn p.x\n}\n"},
+		{"if statement", "package main\n\nfunc main() {\n\tif err != nil {\n\t\treturn\n\t}\n}\n"},
+		{"blank lines preserved", "package main\n\n\nfunc main() {\n\n\tx := 1\n\n}\n"},
 	}
 
-	if got := New().Print(file); got != src {
-		t.Errorf("round trip mismatch:\nwant %q\ngot  %q", src, got)
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			file, err := parser.New().ParseSource("test.go", []byte(tc.src))
+			if err != nil {
+				t.Fatalf("ParseSource failed: %v", err)
+			}
+			if got := New().Print(file); got != tc.src {
+				t.Errorf("round trip mismatch:\nwant %q\ngot  %q", tc.src, got)
+			}
+		})
+	}
+}
+
+// TestRoundTripKnownGaps records constructs that do not round trip yet, so the gap is
+// discoverable rather than folklore. Each needs a schema change: StructTypeExpr and
+// InterfaceTypeExpr have no "end" Space field, so the gap before their closing brace has
+// nowhere to live and is dropped. Adding the field means regenerating both bindings and
+// widening the Java LST to match.
+func TestRoundTripKnownGaps(t *testing.T) {
+	t.Skip("needs an `end` Space on StructTypeExpr and InterfaceTypeExpr")
+
+	cases := []string{
+		"package main\n\ntype Point struct{}\n",
+		"package main\n\ntype Point struct {\n\tx int\n}\n",
+		"package main\n\ntype Reader interface {\n\tRead() error\n}\n",
+	}
+
+	for _, src := range cases {
+		file, err := parser.New().ParseSource("test.go", []byte(src))
+		if err != nil {
+			t.Fatalf("ParseSource failed: %v", err)
+		}
+		if got := New().Print(file); got != src {
+			t.Errorf("round trip mismatch:\nwant %q\ngot  %q", src, got)
+		}
 	}
 }
 

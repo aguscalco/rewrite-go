@@ -63,7 +63,7 @@ cd parser && go build ./... && go test ./...
 ./gradlew build      # or: mvn clean test
 ```
 
-**Run both.** Neither build touches the other's code, so a break on the Go side stays invisible to `./gradlew build` — which is how `parser/printer` stayed uncompilable for several commits.
+**Run both.** Neither build touches the other's code, so a break on the Go side stays invisible to `./gradlew build` — which is how `parser/printer` stayed uncompilable for several commits. CI (`.github/workflows/ci.yml`) now runs Go, Gradle and Maven separately for the same reason.
 
 - Java toolchain 21, but `options.release = 17` — **write Java 17-compatible source**, not 21.
 - Lombok is `compileOnly` + `annotationProcessor`. IDEs without the Lombok plugin will show phantom errors on every `tree/` class.
@@ -79,7 +79,7 @@ cd parser && go build ./... && go test ./...
 
 `README.md`, `PROJECT_SUMMARY.md`, and `CAPABILITIES.md` describe intent and roadmap, and have drifted from the code. Verified discrepancies:
 
-- `CAPABILITIES.md` marks parser/LST/printer "Complete ✅" and "Format Preservation: Lossless". Neither holds — the Go round trip is still broken (`parser/printer/roundtrip_test.go` is skipped) and comments are dropped entirely.
+- `CAPABILITIES.md` marks parser/LST/printer "Complete ✅". The Go round trip is byte-exact for 15 constructs now, but comments are still dropped entirely and struct/interface bodies do not round trip.
 - `README.md` documents `search/` as holding search recipes. It is empty.
 - `README.md` and `CONTRIBUTING.md` show `git clone` from `openrewrite/rewrite-go`; the actual remote is `aguscalco/rewrite-go`.
 

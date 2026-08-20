@@ -129,22 +129,27 @@ import (
 		t.Fatalf("ParseSource failed: %v", err)
 	}
 
-	if len(file.Imports) != 2 {
-		t.Fatalf("Expected 2 imports, got %d", len(file.Imports))
+	// A grouped import block is one ImportDecl holding both specs. Splitting it into one
+	// decl per spec would lose the grouping and print two "import" lines.
+	if len(file.Imports) != 1 {
+		t.Fatalf("Expected 1 import declaration, got %d", len(file.Imports))
 	}
 
-	imp1 := file.Imports[0]
-	if len(imp1.Specs) != 1 {
-		t.Fatalf("Expected 1 spec in first import, got %d", len(imp1.Specs))
+	decl := file.Imports[0]
+	if !decl.Grouped {
+		t.Error("Expected the import declaration to be grouped")
 	}
 
-	if imp1.Specs[0].Path.Value != `"fmt"` {
-		t.Errorf("Expected first import 'fmt', got %s", imp1.Specs[0].Path.Value)
+	if len(decl.Specs) != 2 {
+		t.Fatalf("Expected 2 specs, got %d", len(decl.Specs))
 	}
 
-	imp2 := file.Imports[1]
-	if imp2.Specs[0].Path.Value != `"os"` {
-		t.Errorf("Expected second import 'os', got %s", imp2.Specs[0].Path.Value)
+	if decl.Specs[0].Path.Value != `"fmt"` {
+		t.Errorf("Expected first import 'fmt', got %s", decl.Specs[0].Path.Value)
+	}
+
+	if decl.Specs[1].Path.Value != `"os"` {
+		t.Errorf("Expected second import 'os', got %s", decl.Specs[1].Path.Value)
 	}
 }
 

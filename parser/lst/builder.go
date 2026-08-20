@@ -13,6 +13,11 @@ type Builder struct {
 	fset *token.FileSet
 	info *types.Info
 	src  []byte
+	// cursor is the byte offset just past the last token accounted for. Nodes are built
+	// in source order, so everything between the cursor and the next node is exactly
+	// that node's prefix. The cursor is what stops nested nodes that start at the same
+	// offset from each claiming the same whitespace.
+	cursor int
 }
 
 func NewBuilder(fset *token.FileSet, info *types.Info, src []byte) *Builder {
@@ -26,48 +31,77 @@ func NewBuilder(fset *token.FileSet, info *types.Info, src []byte) *Builder {
 func (b *Builder) BuildFile(file *ast.File) *proto.GoFile {
 	goFile := &proto.GoFile{
 		Id:          newUUID(),
-		Prefix:      b.spaceBefore(file.Pos()),
+		Prefix:      b.prefix(file.Pos()),
 		Markers:     &proto.Markers{Id: newUUID()},
 		SourcePath:  b.fset.Position(file.Pos()).Filename,
 		CharsetName: "UTF-8",
 	}
 
+	b.consume(file.Package, "package")
+
 	if file.Name != nil {
 		goFile.PackageClause = &proto.PackageClause{
 			Id:      newUUID(),
-			Prefix:  b.spaceBefore(file.Name.Pos()),
+			Prefix:  &proto.Space{},
 			Markers: &proto.Markers{Id: newUUID()},
 			Name:    b.buildIdent(file.Name),
 		}
 	}
 
-	for _, imp := range file.Imports {
-		spec := &proto.ImportSpec{
-			Id:      newUUID(),
-			Prefix:  b.spaceBefore(imp.Pos()),
-			Markers: &proto.Markers{Id: newUUID()},
-			Path:    b.buildBasicLit(imp.Path),
-		}
-		if imp.Name != nil {
-			spec.Alias = b.buildIdent(imp.Name)
-		}
-		goFile.Imports = append(goFile.Imports, &proto.ImportDecl{
-			Id:      newUUID(),
-			Prefix:  b.spaceBefore(imp.Pos()),
-			Markers: &proto.Markers{Id: newUUID()},
-			Specs:   []*proto.ImportSpec{spec},
-		})
-	}
-
+	// Imports come from Decls, not file.Imports. file.Imports is flattened, so building
+	// from it loses the "import ( ... )" grouping and leaves the import GenDecl to be
+	// emitted a second time by the declaration loop below.
 	for _, decl := range file.Decls {
+		if gd, ok := decl.(*ast.GenDecl); ok && gd.Tok == token.IMPORT {
+			goFile.Imports = append(goFile.Imports, b.buildImportDecl(gd))
+			continue
+		}
 		if d := b.buildDecl(decl); d != nil {
 			goFile.Declarations = append(goFile.Declarations, d)
 		}
 	}
 
-	goFile.Eof = b.spaceAfter(file.End())
+	goFile.Eof = b.rest()
 
 	return goFile
+}
+
+func (b *Builder) buildImportDecl(d *ast.GenDecl) *proto.ImportDecl {
+	id := &proto.ImportDecl{
+		Id:      newUUID(),
+		Prefix:  b.prefix(d.Pos()),
+		Markers: &proto.Markers{Id: newUUID()},
+		Grouped: d.Lparen.IsValid(),
+	}
+
+	b.consume(d.Pos(), "import")
+	if d.Lparen.IsValid() {
+		b.consume(d.Lparen, "(")
+	}
+
+	for _, spec := range d.Specs {
+		is, ok := spec.(*ast.ImportSpec)
+		if !ok {
+			continue
+		}
+		out := &proto.ImportSpec{
+			Id:      newUUID(),
+			Prefix:  b.prefix(is.Pos()),
+			Markers: &proto.Markers{Id: newUUID()},
+		}
+		if is.Name != nil {
+			out.Alias = b.buildIdent(is.Name)
+		}
+		out.Path = b.buildBasicLit(is.Path)
+		id.Specs = append(id.Specs, out)
+	}
+
+	if d.Rparen.IsValid() {
+		id.End = b.prefix(d.Rparen)
+		b.consume(d.Rparen, ")")
+	}
+
+	return id
 }
 
 func (b *Builder) buildDecl(decl ast.Decl) *proto.Decl {
@@ -91,14 +125,21 @@ func (b *Builder) buildDecl(decl ast.Decl) *proto.Decl {
 func (b *Builder) buildFuncDecl(d *ast.FuncDecl) *proto.FuncDecl {
 	fd := &proto.FuncDecl{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(d.Pos()),
+		Prefix:  b.prefix(d.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
-		Name:    b.buildIdent(d.Name),
 	}
 
+	b.consume(d.Pos(), "func")
+
+	// Fields are built in source order so the cursor stays in step: a method's receiver
+	// precedes its name.
 	if d.Recv != nil && len(d.Recv.List) > 0 {
+		b.consumeText("(")
 		fd.Recv = b.buildField(d.Recv.List[0])
+		b.consumeText(")")
 	}
+
+	fd.Name = b.buildIdent(d.Name)
 
 	if d.Type != nil {
 		fd.Type = b.buildFuncType(d.Type)
@@ -114,10 +155,15 @@ func (b *Builder) buildFuncDecl(d *ast.FuncDecl) *proto.FuncDecl {
 func (b *Builder) buildGenDecl(d *ast.GenDecl) *proto.GenDecl {
 	gd := &proto.GenDecl{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(d.Pos()),
+		Prefix:  b.prefix(d.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 		Tok:     d.Tok.String(),
 		Grouped: d.Lparen.IsValid(),
+	}
+
+	b.consume(d.Pos(), d.Tok.String())
+	if d.Lparen.IsValid() {
+		b.consume(d.Lparen, "(")
 	}
 
 	for _, spec := range d.Specs {
@@ -127,7 +173,8 @@ func (b *Builder) buildGenDecl(d *ast.GenDecl) *proto.GenDecl {
 	}
 
 	if d.Rparen.IsValid() {
-		gd.End = b.spaceAfter(d.Rparen)
+		gd.End = b.prefix(d.Rparen)
+		b.consume(d.Rparen, ")")
 	}
 
 	return gd
@@ -154,7 +201,7 @@ func (b *Builder) buildSpec(spec ast.Spec) *proto.Spec {
 func (b *Builder) buildValueSpec(s *ast.ValueSpec) *proto.ValueSpec {
 	vs := &proto.ValueSpec{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(s.Pos()),
+		Prefix:  b.prefix(s.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 	}
 
@@ -178,7 +225,7 @@ func (b *Builder) buildValueSpec(s *ast.ValueSpec) *proto.ValueSpec {
 func (b *Builder) buildTypeSpec(s *ast.TypeSpec) *proto.TypeSpec {
 	ts := &proto.TypeSpec{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(s.Pos()),
+		Prefix:  b.prefix(s.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 		Name:    b.buildIdent(s.Name),
 		Assign:  s.Assign.IsValid(),
@@ -204,7 +251,7 @@ func (b *Builder) buildStmt(stmt ast.Stmt) *proto.Stmt {
 			Stmt: &proto.Stmt_ExprStmt{
 				ExprStmt: &proto.ExprStmt{
 					Id:      newUUID(),
-					Prefix:  b.spaceBefore(s.Pos()),
+					Prefix:  b.prefix(s.Pos()),
 					Markers: &proto.Markers{Id: newUUID()},
 					Expr:    b.buildExpr(s.X),
 				},
@@ -246,7 +293,7 @@ func (b *Builder) buildStmt(stmt ast.Stmt) *proto.Stmt {
 				Stmt: &proto.Stmt_DeclStmt{
 					DeclStmt: &proto.DeclStmt{
 						Id:      newUUID(),
-						Prefix:  b.spaceBefore(s.Pos()),
+						Prefix:  b.prefix(s.Pos()),
 						Markers: &proto.Markers{Id: newUUID()},
 						Decl:    d,
 					},
@@ -260,9 +307,11 @@ func (b *Builder) buildStmt(stmt ast.Stmt) *proto.Stmt {
 func (b *Builder) buildBlockStmt(s *ast.BlockStmt) *proto.BlockStmt {
 	block := &proto.BlockStmt{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(s.Pos()),
+		Prefix:  b.prefix(s.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 	}
+
+	b.consume(s.Lbrace, "{")
 
 	for _, stmt := range s.List {
 		if st := b.buildStmt(stmt); st != nil {
@@ -270,7 +319,8 @@ func (b *Builder) buildBlockStmt(s *ast.BlockStmt) *proto.BlockStmt {
 		}
 	}
 
-	block.End = b.spaceAfter(s.Rbrace)
+	block.End = b.prefix(s.Rbrace)
+	b.consume(s.Rbrace, "}")
 
 	return block
 }
@@ -278,18 +328,26 @@ func (b *Builder) buildBlockStmt(s *ast.BlockStmt) *proto.BlockStmt {
 func (b *Builder) buildAssignStmt(s *ast.AssignStmt) *proto.AssignStmt {
 	as := &proto.AssignStmt{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(s.Pos()),
+		Prefix:  b.prefix(s.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 		Tok:     s.Tok.String(),
 	}
 
-	for _, lhs := range s.Lhs {
+	for i, lhs := range s.Lhs {
+		if i > 0 {
+			b.consumeText(",")
+		}
 		if e := b.buildExpr(lhs); e != nil {
 			as.Lhs = append(as.Lhs, e)
 		}
 	}
 
-	for _, rhs := range s.Rhs {
+	b.consume(s.TokPos, s.Tok.String())
+
+	for i, rhs := range s.Rhs {
+		if i > 0 {
+			b.consumeText(",")
+		}
 		if e := b.buildExpr(rhs); e != nil {
 			as.Rhs = append(as.Rhs, e)
 		}
@@ -301,11 +359,16 @@ func (b *Builder) buildAssignStmt(s *ast.AssignStmt) *proto.AssignStmt {
 func (b *Builder) buildReturnStmt(s *ast.ReturnStmt) *proto.ReturnStmt {
 	rs := &proto.ReturnStmt{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(s.Pos()),
+		Prefix:  b.prefix(s.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 	}
 
-	for _, result := range s.Results {
+	b.consume(s.Pos(), "return")
+
+	for i, result := range s.Results {
+		if i > 0 {
+			b.consumeText(",")
+		}
 		if e := b.buildExpr(result); e != nil {
 			rs.Results = append(rs.Results, e)
 		}
@@ -317,12 +380,15 @@ func (b *Builder) buildReturnStmt(s *ast.ReturnStmt) *proto.ReturnStmt {
 func (b *Builder) buildIfStmt(s *ast.IfStmt) *proto.IfStmt {
 	is := &proto.IfStmt{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(s.Pos()),
+		Prefix:  b.prefix(s.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 	}
 
+	b.consume(s.If, "if")
+
 	if s.Init != nil {
 		is.Init = b.buildStmt(s.Init)
+		b.consumeText(";")
 	}
 
 	if s.Cond != nil {
@@ -334,6 +400,7 @@ func (b *Builder) buildIfStmt(s *ast.IfStmt) *proto.IfStmt {
 	}
 
 	if s.Else != nil {
+		b.consumeText("else")
 		is.ElseStmt = b.buildStmt(s.Else)
 	}
 
@@ -343,7 +410,7 @@ func (b *Builder) buildIfStmt(s *ast.IfStmt) *proto.IfStmt {
 func (b *Builder) buildForStmt(s *ast.ForStmt) *proto.ForStmt {
 	fs := &proto.ForStmt{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(s.Pos()),
+		Prefix:  b.prefix(s.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 	}
 
@@ -369,7 +436,7 @@ func (b *Builder) buildForStmt(s *ast.ForStmt) *proto.ForStmt {
 func (b *Builder) buildRangeStmt(s *ast.RangeStmt) *proto.RangeStmt {
 	rs := &proto.RangeStmt{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(s.Pos()),
+		Prefix:  b.prefix(s.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 		Tok:     s.Tok.String(),
 	}
@@ -436,7 +503,7 @@ func (b *Builder) buildExpr(expr ast.Expr) *proto.Expr {
 			Expr: &proto.Expr_ParenExpr{
 				ParenExpr: &proto.ParenExpr{
 					Id:      newUUID(),
-					Prefix:  b.spaceBefore(e.Pos()),
+					Prefix:  b.prefix(e.Pos()),
 					Markers: &proto.Markers{Id: newUUID()},
 					X:       b.buildExpr(e.X),
 				},
@@ -453,7 +520,7 @@ func (b *Builder) buildExpr(expr ast.Expr) *proto.Expr {
 			Expr: &proto.Expr_FuncLit{
 				FuncLit: &proto.FuncLit{
 					Id:      newUUID(),
-					Prefix:  b.spaceBefore(e.Pos()),
+					Prefix:  b.prefix(e.Pos()),
 					Markers: &proto.Markers{Id: newUUID()},
 					Type:    b.buildFuncType(e.Type),
 					Body:    b.buildBlockStmt(e.Body),
@@ -465,7 +532,7 @@ func (b *Builder) buildExpr(expr ast.Expr) *proto.Expr {
 			Expr: &proto.Expr_IndexExpr{
 				IndexExpr: &proto.IndexExpr{
 					Id:      newUUID(),
-					Prefix:  b.spaceBefore(e.Pos()),
+					Prefix:  b.prefix(e.Pos()),
 					Markers: &proto.Markers{Id: newUUID()},
 					X:       b.buildExpr(e.X),
 					Index:   b.buildExpr(e.Index),
@@ -477,7 +544,7 @@ func (b *Builder) buildExpr(expr ast.Expr) *proto.Expr {
 			Expr: &proto.Expr_StarExpr{
 				StarExpr: &proto.StarExpr{
 					Id:      newUUID(),
-					Prefix:  b.spaceBefore(e.Pos()),
+					Prefix:  b.prefix(e.Pos()),
 					Markers: &proto.Markers{Id: newUUID()},
 					X:       b.buildExpr(e.X),
 				},
@@ -488,7 +555,7 @@ func (b *Builder) buildExpr(expr ast.Expr) *proto.Expr {
 			Expr: &proto.Expr_KeyValueExpr{
 				KeyValueExpr: &proto.KeyValueExpr{
 					Id:      newUUID(),
-					Prefix:  b.spaceBefore(e.Pos()),
+					Prefix:  b.prefix(e.Pos()),
 					Markers: &proto.Markers{Id: newUUID()},
 					Key:     b.buildExpr(e.Key),
 					Value:   b.buildExpr(e.Value),
@@ -544,7 +611,7 @@ func (b *Builder) buildExpr(expr ast.Expr) *proto.Expr {
 func (b *Builder) buildInterfaceTypeExpr(it *ast.InterfaceType) *proto.InterfaceTypeExpr {
 	ite := &proto.InterfaceTypeExpr{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(it.Pos()),
+		Prefix:  b.prefix(it.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 	}
 
@@ -560,7 +627,7 @@ func (b *Builder) buildInterfaceTypeExpr(it *ast.InterfaceType) *proto.Interface
 func (b *Builder) buildMethod(field *ast.Field) *proto.Method {
 	method := &proto.Method{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(field.Pos()),
+		Prefix:  b.prefix(field.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 	}
 
@@ -580,7 +647,7 @@ func (b *Builder) buildMethod(field *ast.Field) *proto.Method {
 func (b *Builder) buildArrayTypeExpr(at *ast.ArrayType) *proto.ArrayTypeExpr {
 	ate := &proto.ArrayTypeExpr{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(at.Pos()),
+		Prefix:  b.prefix(at.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 	}
 
@@ -598,7 +665,7 @@ func (b *Builder) buildArrayTypeExpr(at *ast.ArrayType) *proto.ArrayTypeExpr {
 func (b *Builder) buildMapTypeExpr(mt *ast.MapType) *proto.MapTypeExpr {
 	mte := &proto.MapTypeExpr{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(mt.Pos()),
+		Prefix:  b.prefix(mt.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 	}
 
@@ -616,7 +683,7 @@ func (b *Builder) buildMapTypeExpr(mt *ast.MapType) *proto.MapTypeExpr {
 func (b *Builder) buildChanTypeExpr(ct *ast.ChanType) *proto.ChanTypeExpr {
 	cte := &proto.ChanTypeExpr{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(ct.Pos()),
+		Prefix:  b.prefix(ct.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 		Dir:     int32(ct.Dir),
 	}
@@ -631,14 +698,17 @@ func (b *Builder) buildChanTypeExpr(ct *ast.ChanType) *proto.ChanTypeExpr {
 func (b *Builder) buildStructTypeExpr(st *ast.StructType) *proto.StructTypeExpr {
 	ste := &proto.StructTypeExpr{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(st.Pos()),
+		Prefix:  b.prefix(st.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 	}
 
+	b.consume(st.Pos(), "struct")
 	if st.Fields != nil {
+		b.consumeText("{")
 		for _, field := range st.Fields.List {
 			ste.Fields = append(ste.Fields, b.buildField(field))
 		}
+		b.consumeText("}")
 	}
 
 	return ste
@@ -647,7 +717,7 @@ func (b *Builder) buildStructTypeExpr(st *ast.StructType) *proto.StructTypeExpr 
 func (b *Builder) buildFuncTypeExpr(ft *ast.FuncType) *proto.FuncTypeExpr {
 	fte := &proto.FuncTypeExpr{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(ft.Pos()),
+		Prefix:  b.prefix(ft.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 	}
 
@@ -669,7 +739,7 @@ func (b *Builder) buildFuncTypeExpr(ft *ast.FuncType) *proto.FuncTypeExpr {
 func (b *Builder) buildTypeAssertExpr(ta *ast.TypeAssertExpr) *proto.TypeAssertExpr {
 	tae := &proto.TypeAssertExpr{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(ta.Pos()),
+		Prefix:  b.prefix(ta.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 	}
 
@@ -691,10 +761,11 @@ func (b *Builder) buildTypeAssertExpr(ta *ast.TypeAssertExpr) *proto.TypeAssertE
 func (b *Builder) buildIdent(id *ast.Ident) *proto.Ident {
 	ident := &proto.Ident{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(id.Pos()),
+		Prefix:  b.prefix(id.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 		Name:    id.Name,
 	}
+	b.consume(id.Pos(), id.Name)
 
 	if tv, ok := b.info.Types[id]; ok {
 		ident.Type = b.convertType(tv.Type)
@@ -704,29 +775,38 @@ func (b *Builder) buildIdent(id *ast.Ident) *proto.Ident {
 }
 
 func (b *Builder) buildBasicLit(lit *ast.BasicLit) *proto.BasicLit {
-	return &proto.BasicLit{
+	bl := &proto.BasicLit{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(lit.Pos()),
+		Prefix:  b.prefix(lit.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 		Kind:    lit.Kind.String(),
 		Value:   lit.Value,
 	}
+	b.consume(lit.Pos(), lit.Value)
+	return bl
 }
 
 func (b *Builder) buildCallExpr(call *ast.CallExpr) *proto.CallExpr {
 	ce := &proto.CallExpr{
 		Id:       newUUID(),
-		Prefix:   b.spaceBefore(call.Pos()),
+		Prefix:   b.prefix(call.Pos()),
 		Markers:  &proto.Markers{Id: newUUID()},
 		Fun:      b.buildExpr(call.Fun),
 		Ellipsis: call.Ellipsis.IsValid(),
 	}
 
-	for _, arg := range call.Args {
+	b.consume(call.Lparen, "(")
+
+	for i, arg := range call.Args {
+		if i > 0 {
+			b.consumeText(",")
+		}
 		if e := b.buildExpr(arg); e != nil {
 			ce.Args = append(ce.Args, e)
 		}
 	}
+
+	b.consume(call.Rparen, ")")
 
 	if tv, ok := b.info.Types[call]; ok {
 		ce.Type = b.convertType(tv.Type)
@@ -738,11 +818,12 @@ func (b *Builder) buildCallExpr(call *ast.CallExpr) *proto.CallExpr {
 func (b *Builder) buildSelectorExpr(sel *ast.SelectorExpr) *proto.SelectorExpr {
 	se := &proto.SelectorExpr{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(sel.Pos()),
+		Prefix:  b.prefix(sel.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
-		X:       b.buildExpr(sel.X),
-		Sel:     b.buildIdent(sel.Sel),
 	}
+	se.X = b.buildExpr(sel.X)
+	b.consumeText(".")
+	se.Sel = b.buildIdent(sel.Sel)
 
 	if tv, ok := b.info.Types[sel]; ok {
 		se.Type = b.convertType(tv.Type)
@@ -754,12 +835,13 @@ func (b *Builder) buildSelectorExpr(sel *ast.SelectorExpr) *proto.SelectorExpr {
 func (b *Builder) buildBinaryExpr(bin *ast.BinaryExpr) *proto.BinaryExpr {
 	be := &proto.BinaryExpr{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(bin.Pos()),
+		Prefix:  b.prefix(bin.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
-		X:       b.buildExpr(bin.X),
 		Op:      bin.Op.String(),
-		Y:       b.buildExpr(bin.Y),
 	}
+	be.X = b.buildExpr(bin.X)
+	b.consume(bin.OpPos, bin.Op.String())
+	be.Y = b.buildExpr(bin.Y)
 
 	if tv, ok := b.info.Types[bin]; ok {
 		be.Type = b.convertType(tv.Type)
@@ -771,7 +853,7 @@ func (b *Builder) buildBinaryExpr(bin *ast.BinaryExpr) *proto.BinaryExpr {
 func (b *Builder) buildUnaryExpr(un *ast.UnaryExpr) *proto.UnaryExpr {
 	ue := &proto.UnaryExpr{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(un.Pos()),
+		Prefix:  b.prefix(un.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 		Op:      un.Op.String(),
 		X:       b.buildExpr(un.X),
@@ -787,7 +869,7 @@ func (b *Builder) buildUnaryExpr(un *ast.UnaryExpr) *proto.UnaryExpr {
 func (b *Builder) buildCompositeLit(lit *ast.CompositeLit) *proto.CompositeLit {
 	cl := &proto.CompositeLit{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(lit.Pos()),
+		Prefix:  b.prefix(lit.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 	}
 
@@ -812,14 +894,28 @@ func (b *Builder) buildFuncType(ft *ast.FuncType) *proto.FuncType {
 	funcType := &proto.FuncType{}
 
 	if ft.Params != nil {
-		for _, field := range ft.Params.List {
+		b.consume(ft.Params.Opening, "(")
+		for i, field := range ft.Params.List {
+			if i > 0 {
+				b.consumeText(",")
+			}
 			funcType.Params = append(funcType.Params, b.buildField(field))
 		}
+		b.consume(ft.Params.Closing, ")")
 	}
 
 	if ft.Results != nil {
-		for _, field := range ft.Results.List {
+		if ft.Results.Opening.IsValid() {
+			b.consume(ft.Results.Opening, "(")
+		}
+		for i, field := range ft.Results.List {
+			if i > 0 {
+				b.consumeText(",")
+			}
 			funcType.Results = append(funcType.Results, b.buildField(field))
+		}
+		if ft.Results.Closing.IsValid() {
+			b.consume(ft.Results.Closing, ")")
 		}
 	}
 
@@ -829,11 +925,16 @@ func (b *Builder) buildFuncType(ft *ast.FuncType) *proto.FuncType {
 func (b *Builder) buildField(field *ast.Field) *proto.Field {
 	f := &proto.Field{
 		Id:      newUUID(),
-		Prefix:  b.spaceBefore(field.Pos()),
+		Prefix:  b.prefix(field.Pos()),
 		Markers: &proto.Markers{Id: newUUID()},
 	}
 
-	for _, name := range field.Names {
+	for i, name := range field.Names {
+		if i > 0 {
+			b.consumeText(",")
+		}
+		b.prefix(name.Pos())
+		b.consume(name.Pos(), name.Name)
 		f.Names = append(f.Names, name.Name)
 	}
 
@@ -949,60 +1050,69 @@ func (b *Builder) convertType(t types.Type) *proto.GoType {
 	return nil
 }
 
-func (b *Builder) spaceBefore(pos token.Pos) *proto.Space {
+func (b *Builder) offset(pos token.Pos) int {
 	if !pos.IsValid() {
+		return b.cursor
+	}
+	off := b.fset.Position(pos).Offset
+	if off < 0 {
+		return 0
+	}
+	if off > len(b.src) {
+		return len(b.src)
+	}
+	return off
+}
+
+// prefix claims the source between the cursor and pos as the next node's prefix.
+func (b *Builder) prefix(pos token.Pos) *proto.Space {
+	off := b.offset(pos)
+	if off <= b.cursor {
 		return &proto.Space{}
 	}
+	ws := string(b.src[b.cursor:off])
+	b.cursor = off
+	return &proto.Space{Whitespace: ws}
+}
 
-	position := b.fset.Position(pos)
-	if position.Offset == 0 {
+// consume advances the cursor past a token the printer emits literally, so the token
+// does not leak into the next node's prefix and get printed a second time.
+func (b *Builder) consume(pos token.Pos, text string) {
+	off := b.offset(pos)
+	if off < b.cursor {
+		return
+	}
+	end := off + len(text)
+	if end > len(b.src) {
+		end = len(b.src)
+	}
+	b.cursor = end
+}
+
+// consumeText skips whitespace at the cursor and advances past text if that is what
+// comes next. Used for tokens whose position the AST does not record.
+func (b *Builder) consumeText(text string) {
+	i := b.cursor
+	for i < len(b.src) && isSpace(b.src[i]) {
+		i++
+	}
+	if i+len(text) <= len(b.src) && string(b.src[i:i+len(text)]) == text {
+		b.cursor = i + len(text)
+	}
+}
+
+// rest returns everything left in the source, for the trailing Space on a file.
+func (b *Builder) rest() *proto.Space {
+	if b.cursor >= len(b.src) {
 		return &proto.Space{}
 	}
-
-	// Only the run of whitespace immediately preceding the node belongs in a Space.
-	// Scanning back to the start of the line would swallow real source tokens, which the
-	// printer would then emit a second time.
-	start := position.Offset
-	for start > 0 && isSpace(b.src[start-1]) {
-		start--
-	}
-
-	if start >= position.Offset {
-		return &proto.Space{}
-	}
-
-	return &proto.Space{
-		Whitespace: string(b.src[start:position.Offset]),
-	}
+	ws := string(b.src[b.cursor:])
+	b.cursor = len(b.src)
+	return &proto.Space{Whitespace: ws}
 }
 
 func isSpace(c byte) bool {
 	return c == ' ' || c == '\t' || c == '\n' || c == '\r'
-}
-
-func (b *Builder) spaceAfter(pos token.Pos) *proto.Space {
-	if !pos.IsValid() {
-		return &proto.Space{}
-	}
-
-	position := b.fset.Position(pos)
-	if position.Offset >= len(b.src) {
-		return &proto.Space{}
-	}
-
-	end := position.Offset
-	for end < len(b.src) && b.src[end] != '\n' {
-		end++
-	}
-
-	if end <= position.Offset {
-		return &proto.Space{}
-	}
-
-	whitespace := string(b.src[position.Offset:end])
-	return &proto.Space{
-		Whitespace: whitespace,
-	}
 }
 
 func newUUID() *proto.UUID {

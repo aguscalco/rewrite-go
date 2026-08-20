@@ -27,7 +27,9 @@ A formatting fix here does **not** fix recipe output. Changes to node rendering 
 
 ## Pitfalls
 
-- **The round trip does not work yet.** `roundtrip_test.go` holds the acceptance criterion (`TestRoundTrip`, currently skipped) and lists the three remaining causes: the printer writes keyword spacing that the following node's prefix also carries; import grouping is lost in `../lst/builder.go`; and nested nodes at the same offset each print the same indentation. `TestPrefixesContainOnlyWhitespace` passes and guards the prefix-capture fix.
+- **Prefixes own all spacing — the printer must not add its own.** Keywords are written bare (`"package"`, `"func"`, `"return"`), and the following node's prefix supplies the space. Writing `"package "` double-spaces the output. The two exceptions are spots where the AST records no position and gofmt's spacing is invariant: `" ("` after `import`/`var`, and the single space before an assignment or binary operator.
+- **Every literal the printer writes, the builder must consume.** The two files are one contract; see `../lst/AGENTS.md`. `TestRoundTrip` covers 15 constructs byte-exactly and will catch a violation immediately.
+- **Struct and interface bodies do not round trip** — the proto has no Space fields for their braces. `TestRoundTripKnownGaps` records this, skipped.
 - **`printGoType` is for type attribution only.** Fields typed `Expr` in the proto (`ValueSpec.type`, `TypeSpec.type`, `Field.type`) must go through `printExpr`. Passing them to `printGoType` was a build break for several commits after `Field.type` changed from `GoType` to `Expr` — nothing caught it because this package had no tests.
 - **`Printer` is stateful and not safe for concurrent use.** `Print` calls `p.output.Reset()`, so a single `Printer` cannot serve two goroutines. Call `New()` per invocation.
 - Grouped imports print as `import (...)` only when `ImportDecl.Grouped` is set — and `../lst/builder.go` never sets it. Correct-looking code here still produces one `import` line per spec.

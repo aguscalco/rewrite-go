@@ -41,32 +41,30 @@ func (p *Printer) printFile(file *proto.GoFile) {
 
 func (p *Printer) printPackageClause(pc *proto.PackageClause) {
 	p.printSpace(pc.Prefix)
-	p.write("package ")
+	p.write("package")
 	p.printIdent(pc.Name)
 }
 
 func (p *Printer) printImportDecl(id *proto.ImportDecl) {
 	p.printSpace(id.Prefix)
-	p.write("import ")
+	p.write("import")
 
 	if id.Grouped {
-		p.write("(")
+		p.write(" (")
 		for _, spec := range id.Specs {
 			p.printImportSpec(spec)
 		}
+		p.printSpace(id.End)
 		p.write(")")
 	} else if len(id.Specs) > 0 {
 		p.printImportSpec(id.Specs[0])
 	}
-
-	p.printSpace(id.End)
 }
 
 func (p *Printer) printImportSpec(spec *proto.ImportSpec) {
 	p.printSpace(spec.Prefix)
 	if spec.Alias != nil {
 		p.printIdent(spec.Alias)
-		p.write(" ")
 	}
 	p.printBasicLit(spec.Path)
 }
@@ -82,12 +80,12 @@ func (p *Printer) printDecl(decl *proto.Decl) {
 
 func (p *Printer) printFuncDecl(fd *proto.FuncDecl) {
 	p.printSpace(fd.Prefix)
-	p.write("func ")
+	p.write("func")
 
 	if fd.Recv != nil {
-		p.write("(")
+		p.write(" (")
 		p.printField(fd.Recv)
-		p.write(") ")
+		p.write(")")
 	}
 
 	p.printIdent(fd.Name)
@@ -97,7 +95,6 @@ func (p *Printer) printFuncDecl(fd *proto.FuncDecl) {
 	}
 
 	if fd.Body != nil {
-		p.write(" ")
 		p.printBlockStmt(fd.Body)
 	}
 }
@@ -105,19 +102,17 @@ func (p *Printer) printFuncDecl(fd *proto.FuncDecl) {
 func (p *Printer) printGenDecl(gd *proto.GenDecl) {
 	p.printSpace(gd.Prefix)
 	p.write(gd.Tok)
-	p.write(" ")
 
 	if gd.Grouped {
-		p.write("(")
+		p.write(" (")
 		for _, spec := range gd.Specs {
 			p.printSpec(spec)
 		}
+		p.printSpace(gd.End)
 		p.write(")")
 	} else if len(gd.Specs) > 0 {
 		p.printSpec(gd.Specs[0])
 	}
-
-	p.printSpace(gd.End)
 }
 
 func (p *Printer) printSpec(spec *proto.Spec) {
@@ -133,21 +128,20 @@ func (p *Printer) printValueSpec(vs *proto.ValueSpec) {
 	p.printSpace(vs.Prefix)
 	for i, name := range vs.Names {
 		if i > 0 {
-			p.write(", ")
+			p.write(",")
 		}
 		p.printIdent(name)
 	}
 
 	if vs.Type != nil {
-		p.write(" ")
 		p.printExpr(vs.Type)
 	}
 
 	if len(vs.Values) > 0 {
-		p.write(" = ")
+		p.write(" =")
 		for i, val := range vs.Values {
 			if i > 0 {
-				p.write(", ")
+				p.write(",")
 			}
 			p.printExpr(val)
 		}
@@ -162,7 +156,6 @@ func (p *Printer) printTypeSpec(ts *proto.TypeSpec) {
 		p.write(" =")
 	}
 
-	p.write(" ")
 	p.printExpr(ts.Type)
 }
 
@@ -195,24 +188,23 @@ func (p *Printer) printBlockStmt(bs *proto.BlockStmt) {
 	for _, stmt := range bs.Stmts {
 		p.printStmt(stmt)
 	}
-	p.write("}")
 	p.printSpace(bs.End)
+	p.write("}")
 }
 
 func (p *Printer) printAssignStmt(as *proto.AssignStmt) {
 	p.printSpace(as.Prefix)
 	for i, lhs := range as.Lhs {
 		if i > 0 {
-			p.write(", ")
+			p.write(",")
 		}
 		p.printExpr(lhs)
 	}
 	p.write(" ")
 	p.write(as.Tok)
-	p.write(" ")
 	for i, rhs := range as.Rhs {
 		if i > 0 {
-			p.write(", ")
+			p.write(",")
 		}
 		p.printExpr(rhs)
 	}
@@ -222,10 +214,9 @@ func (p *Printer) printReturnStmt(rs *proto.ReturnStmt) {
 	p.printSpace(rs.Prefix)
 	p.write("return")
 	if len(rs.Results) > 0 {
-		p.write(" ")
 		for i, result := range rs.Results {
 			if i > 0 {
-				p.write(", ")
+				p.write(",")
 			}
 			p.printExpr(result)
 		}
@@ -234,19 +225,18 @@ func (p *Printer) printReturnStmt(rs *proto.ReturnStmt) {
 
 func (p *Printer) printIfStmt(is *proto.IfStmt) {
 	p.printSpace(is.Prefix)
-	p.write("if ")
+	p.write("if")
 
 	if is.Init != nil {
 		p.printStmt(is.Init)
-		p.write("; ")
+		p.write(";")
 	}
 
 	p.printExpr(is.Cond)
-	p.write(" ")
 	p.printBlockStmt(is.Body)
 
 	if is.ElseStmt != nil {
-		p.write(" else ")
+		p.write(" else")
 		p.printStmt(is.ElseStmt)
 	}
 }
@@ -280,7 +270,7 @@ func (p *Printer) printRangeStmt(rs *proto.RangeStmt) {
 	if rs.Key != nil {
 		p.printExpr(rs.Key)
 		if rs.Value != nil {
-			p.write(", ")
+			p.write(",")
 			p.printExpr(rs.Value)
 		}
 		p.write(" ")
@@ -318,7 +308,136 @@ func (p *Printer) printExpr(expr *proto.Expr) {
 		p.printStarExpr(e.StarExpr)
 	case *proto.Expr_KeyValueExpr:
 		p.printKeyValueExpr(e.KeyValueExpr)
+	case *proto.Expr_StructTypeExpr:
+		p.printStructTypeExpr(e.StructTypeExpr)
+	case *proto.Expr_InterfaceTypeExpr:
+		p.printInterfaceTypeExpr(e.InterfaceTypeExpr)
+	case *proto.Expr_ArrayTypeExpr:
+		p.printArrayTypeExpr(e.ArrayTypeExpr)
+	case *proto.Expr_SliceTypeExpr:
+		p.printSliceTypeExpr(e.SliceTypeExpr)
+	case *proto.Expr_MapTypeExpr:
+		p.printMapTypeExpr(e.MapTypeExpr)
+	case *proto.Expr_ChanTypeExpr:
+		p.printChanTypeExpr(e.ChanTypeExpr)
+	case *proto.Expr_PointerTypeExpr:
+		p.printPointerTypeExpr(e.PointerTypeExpr)
+	case *proto.Expr_FuncTypeExpr:
+		p.printFuncTypeExpr(e.FuncTypeExpr)
+	case *proto.Expr_TypeAssertExpr:
+		p.printTypeAssertExpr(e.TypeAssertExpr)
 	}
+}
+
+func (p *Printer) printMethod(m *proto.Method) {
+	p.printSpace(m.Prefix)
+	p.write(m.Name)
+	if m.Type != nil {
+		p.printFuncType(m.Type)
+	}
+}
+
+func (p *Printer) printStructTypeExpr(st *proto.StructTypeExpr) {
+	p.printSpace(st.Prefix)
+	p.write("struct {")
+	for _, field := range st.Fields {
+		p.printField(field)
+	}
+	p.write("}")
+}
+
+func (p *Printer) printInterfaceTypeExpr(it *proto.InterfaceTypeExpr) {
+	p.printSpace(it.Prefix)
+	p.write("interface {")
+	for _, method := range it.Methods {
+		p.printMethod(method)
+	}
+	p.write("}")
+}
+
+func (p *Printer) printArrayTypeExpr(at *proto.ArrayTypeExpr) {
+	p.printSpace(at.Prefix)
+	p.write("[")
+	if at.Len != nil {
+		p.printExpr(at.Len)
+	}
+	p.write("]")
+	if at.Elt != nil {
+		p.printExpr(at.Elt)
+	}
+}
+
+func (p *Printer) printSliceTypeExpr(st *proto.SliceTypeExpr) {
+	p.printSpace(st.Prefix)
+	p.write("[]")
+	if st.Elt != nil {
+		p.printExpr(st.Elt)
+	}
+}
+
+func (p *Printer) printMapTypeExpr(mt *proto.MapTypeExpr) {
+	p.printSpace(mt.Prefix)
+	p.write("map[")
+	if mt.Key != nil {
+		p.printExpr(mt.Key)
+	}
+	p.write("]")
+	if mt.Value != nil {
+		p.printExpr(mt.Value)
+	}
+}
+
+func (p *Printer) printChanTypeExpr(ct *proto.ChanTypeExpr) {
+	p.printSpace(ct.Prefix)
+	switch ct.Dir {
+	case 1:
+		p.write("chan<-")
+	case 2:
+		p.write("<-chan")
+	default:
+		p.write("chan")
+	}
+	if ct.Value != nil {
+		p.printExpr(ct.Value)
+	}
+}
+
+func (p *Printer) printPointerTypeExpr(pt *proto.PointerTypeExpr) {
+	p.printSpace(pt.Prefix)
+	p.write("*")
+	if pt.Base != nil {
+		p.printExpr(pt.Base)
+	}
+}
+
+func (p *Printer) printFuncTypeExpr(ft *proto.FuncTypeExpr) {
+	p.printSpace(ft.Prefix)
+	p.write("func(")
+	for i, param := range ft.Params {
+		if i > 0 {
+			p.write(",")
+		}
+		p.printField(param)
+	}
+	p.write(")")
+	for i, result := range ft.Results {
+		if i > 0 {
+			p.write(",")
+		}
+		p.printField(result)
+	}
+}
+
+func (p *Printer) printTypeAssertExpr(ta *proto.TypeAssertExpr) {
+	p.printSpace(ta.Prefix)
+	if ta.X != nil {
+		p.printExpr(ta.X)
+	}
+	p.write(".(")
+	if ta.Type != nil {
+		p.printExpr(ta.Type)
+	}
+	p.write(")")
 }
 
 func (p *Printer) printIdent(id *proto.Ident) {
@@ -337,7 +456,7 @@ func (p *Printer) printCallExpr(ce *proto.CallExpr) {
 	p.write("(")
 	for i, arg := range ce.Args {
 		if i > 0 {
-			p.write(", ")
+			p.write(",")
 		}
 		p.printExpr(arg)
 	}
@@ -359,7 +478,6 @@ func (p *Printer) printBinaryExpr(be *proto.BinaryExpr) {
 	p.printExpr(be.X)
 	p.write(" ")
 	p.write(be.Op)
-	p.write(" ")
 	p.printExpr(be.Y)
 }
 
@@ -384,7 +502,7 @@ func (p *Printer) printCompositeLit(cl *proto.CompositeLit) {
 	p.write("{")
 	for i, elt := range cl.Elts {
 		if i > 0 {
-			p.write(", ")
+			p.write(",")
 		}
 		p.printExpr(elt)
 	}
@@ -416,16 +534,14 @@ func (p *Printer) printField(field *proto.Field) {
 	p.printSpace(field.Prefix)
 	for i, name := range field.Names {
 		if i > 0 {
-			p.write(", ")
+			p.write(",")
 		}
 		p.write(name)
 	}
 	if field.Type != nil {
-		p.write(" ")
 		p.printExpr(field.Type)
 	}
 	if field.Tag != "" {
-		p.write(" ")
 		p.write(field.Tag)
 	}
 }
@@ -434,21 +550,20 @@ func (p *Printer) printFuncType(ft *proto.FuncType) {
 	p.write("(")
 	for i, param := range ft.Params {
 		if i > 0 {
-			p.write(", ")
+			p.write(",")
 		}
 		p.printField(param)
 	}
 	p.write(")")
 
 	if len(ft.Results) > 0 {
-		p.write(" ")
 		if len(ft.Results) == 1 && len(ft.Results[0].Names) == 0 {
-			p.printExpr(ft.Results[0].Type)
+			p.printField(ft.Results[0])
 		} else {
 			p.write("(")
 			for i, result := range ft.Results {
 				if i > 0 {
-					p.write(", ")
+					p.write(",")
 				}
 				p.printField(result)
 			}
