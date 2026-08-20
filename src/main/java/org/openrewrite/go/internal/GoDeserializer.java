@@ -92,7 +92,7 @@ public class GoDeserializer {
         } else if (proto.hasGenDecl()) {
             return deserializeGenDecl(proto.getGenDecl());
         }
-        return null;
+        throw unsupported("Decl", proto.getDeclCase().name());
     }
     
     private FuncDecl deserializeFuncDecl(GoProto.FuncDecl proto) {
@@ -137,7 +137,7 @@ public class GoDeserializer {
         } else if (proto.hasTypeSpec()) {
             return deserializeTypeSpec(proto.getTypeSpec());
         }
-        return null;
+        throw unsupported("Spec", proto.getSpecCase().name());
     }
     
     private ValueSpec deserializeValueSpec(GoProto.ValueSpec proto) {
@@ -212,7 +212,7 @@ public class GoDeserializer {
         } else if (proto.hasIfStmt()) {
             return deserializeIfStmt(proto.getIfStmt());
         }
-        return null;
+        throw unsupported("Stmt", proto.getStmtCase().name());
     }
     
     private AssignStmt deserializeAssignStmt(GoProto.AssignStmt proto) {
@@ -287,8 +287,30 @@ public class GoDeserializer {
             return deserializeTypeAssertExpr(proto.getTypeAssertExpr());
         } else if (proto.hasStarExpr()) {
             return deserializeStarExpr(proto.getStarExpr());
+        } else if (proto.hasSliceTypeExpr()) {
+            return deserializeSliceTypeExpr(proto.getSliceTypeExpr());
+        } else if (proto.hasPointerTypeExpr()) {
+            return deserializePointerTypeExpr(proto.getPointerTypeExpr());
         }
-        return null;
+        throw unsupported("Expr", proto.getExprCase().name());
+    }
+
+    private SliceTypeExpr deserializeSliceTypeExpr(GoProto.SliceTypeExpr proto) {
+        return new SliceTypeExpr(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            proto.hasElt() ? deserializeExpr(proto.getElt()) : null
+        );
+    }
+
+    private PointerTypeExpr deserializePointerTypeExpr(GoProto.PointerTypeExpr proto) {
+        return new PointerTypeExpr(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            proto.hasBase() ? deserializeExpr(proto.getBase()) : null
+        );
     }
     
     private Ident deserializeIdent(GoProto.Ident proto) {
@@ -528,6 +550,12 @@ public class GoDeserializer {
             toMarkers(proto.getMarkers()),
             type
         );
+    }
+    
+    private IllegalArgumentException unsupported(String category, String protoCase) {
+        return new IllegalArgumentException(
+            "Unsupported Go " + category + " kind '" + protoCase + "'. The proto schema defines it but " +
+            "org.openrewrite.go.tree has no corresponding node. Dropping it would corrupt the LST.");
     }
     
     private UUID toUUID(GoProto.UUID proto) {
