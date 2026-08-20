@@ -30,7 +30,7 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                 @Override
                 public Tree visitPackageClause(PackageClause packageClause, PrintOutputCapture<P> p) {
                     printSpace(packageClause.getPrefix(), p);
-                    p.out.append("package ");
+                    p.out.append("package");
                     visit(packageClause.getName(), p);
                     return packageClause;
                 }
@@ -38,20 +38,17 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                 @Override
                 public Tree visitImportDecl(ImportDecl importDecl, PrintOutputCapture<P> p) {
                     printSpace(importDecl.getPrefix(), p);
-                    p.out.append("import ");
+                    p.out.append("import");
                     if (importDecl.isGrouped()) {
-                        p.out.append("(");
+                        p.out.append(" (");
                         for (ImportSpec spec : importDecl.getSpecs()) {
                             visit(spec, p);
                         }
-                        if (!importDecl.getSpecs().isEmpty()) {
-                            p.out.append("\n");
-                        }
+                        printSpace(importDecl.getEnd(), p);
                         p.out.append(")");
                     } else if (!importDecl.getSpecs().isEmpty()) {
                         visit(importDecl.getSpecs().get(0), p);
                     }
-                    printSpace(importDecl.getEnd(), p);
                     return importDecl;
                 }
                 
@@ -60,7 +57,6 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                     printSpace(importSpec.getPrefix(), p);
                     if (importSpec.getAlias() != null) {
                         visit(importSpec.getAlias(), p);
-                        p.out.append(" ");
                     }
                     visit(importSpec.getPath(), p);
                     return importSpec;
@@ -83,7 +79,7 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                 @Override
                 public Tree visitFuncDecl(FuncDecl funcDecl, PrintOutputCapture<P> p) {
                     printSpace(funcDecl.getPrefix(), p);
-                    p.out.append("func ");
+                    p.out.append("func");
                     if (funcDecl.getRecv() != null) {
                         p.out.append("(");
                         visit(funcDecl.getRecv(), p);
@@ -94,7 +90,6 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                         visit(funcDecl.getType(), p);
                     }
                     if (funcDecl.getBody() != null) {
-                        p.out.append(" ");
                         visit(funcDecl.getBody(), p);
                     }
                     return funcDecl;
@@ -103,17 +98,17 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                 @Override
                 public Tree visitGenDecl(GenDecl genDecl, PrintOutputCapture<P> p) {
                     printSpace(genDecl.getPrefix(), p);
-                    p.out.append(genDecl.getTok()).append(" ");
+                    p.out.append(genDecl.getTok());
                     if (genDecl.isGrouped()) {
-                        p.out.append("(");
+                        p.out.append(" (");
                         for (Spec spec : genDecl.getSpecs()) {
                             visit(spec, p);
                         }
+                        printSpace(genDecl.getEnd(), p);
                         p.out.append(")");
                     } else if (!genDecl.getSpecs().isEmpty()) {
                         visit(genDecl.getSpecs().get(0), p);
                     }
-                    printSpace(genDecl.getEnd(), p);
                     return genDecl;
                 }
                 
@@ -122,19 +117,18 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                     printSpace(valueSpec.getPrefix(), p);
                     for (int i = 0; i < valueSpec.getNames().size(); i++) {
                         if (i > 0) {
-                            p.out.append(", ");
+                            p.out.append(",");
                         }
                         visit(valueSpec.getNames().get(i), p);
                     }
                     if (valueSpec.getType() != null) {
-                        p.out.append(" ");
                         visit(valueSpec.getType(), p);
                     }
                     if (!valueSpec.getValues().isEmpty()) {
-                        p.out.append(" = ");
+                        p.out.append(" =");
                         for (int i = 0; i < valueSpec.getValues().size(); i++) {
                             if (i > 0) {
-                                p.out.append(", ");
+                                p.out.append(",");
                             }
                             visit(valueSpec.getValues().get(i), p);
                         }
@@ -149,7 +143,6 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                     if (typeSpec.isAssign()) {
                         p.out.append(" =");
                     }
-                    p.out.append(" ");
                     visit(typeSpec.getType(), p);
                     return typeSpec;
                 }
@@ -159,16 +152,17 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                     printSpace(field.getPrefix(), p);
                     for (int i = 0; i < field.getNames().size(); i++) {
                         if (i > 0) {
+                            // Names are plain strings with no prefix, so the separator
+                            // spacing has to come from here.
                             p.out.append(", ");
                         }
                         p.out.append(field.getNames().get(i));
                     }
                     if (field.getType() != null) {
-                        p.out.append(" ");
                         visit(field.getType(), p);
                     }
                     if (field.getTag() != null && !field.getTag().isEmpty()) {
-                        p.out.append(" ").append(field.getTag());
+                        p.out.append(field.getTag());
                     }
                     return field;
                 }
@@ -180,8 +174,8 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                     for (Stmt stmt : blockStmt.getStmts()) {
                         visit(stmt, p);
                     }
-                    p.out.append("}");
                     printSpace(blockStmt.getEnd(), p);
+                    p.out.append("}");
                     return blockStmt;
                 }
                 
@@ -197,14 +191,14 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                     printSpace(assignStmt.getPrefix(), p);
                     for (int i = 0; i < assignStmt.getLhs().size(); i++) {
                         if (i > 0) {
-                            p.out.append(", ");
+                            p.out.append(",");
                         }
                         visit(assignStmt.getLhs().get(i), p);
                     }
-                    p.out.append(" ").append(assignStmt.getTok()).append(" ");
+                    p.out.append(" ").append(assignStmt.getTok());
                     for (int i = 0; i < assignStmt.getRhs().size(); i++) {
                         if (i > 0) {
-                            p.out.append(", ");
+                            p.out.append(",");
                         }
                         visit(assignStmt.getRhs().get(i), p);
                     }
@@ -216,10 +210,9 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                     printSpace(returnStmt.getPrefix(), p);
                     p.out.append("return");
                     if (!returnStmt.getResults().isEmpty()) {
-                        p.out.append(" ");
                         for (int i = 0; i < returnStmt.getResults().size(); i++) {
                             if (i > 0) {
-                                p.out.append(", ");
+                                p.out.append(",");
                             }
                             visit(returnStmt.getResults().get(i), p);
                         }
@@ -230,20 +223,19 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                 @Override
                 public Tree visitIfStmt(IfStmt ifStmt, PrintOutputCapture<P> p) {
                     printSpace(ifStmt.getPrefix(), p);
-                    p.out.append("if ");
+                    p.out.append("if");
                     if (ifStmt.getInit() != null) {
                         visit(ifStmt.getInit(), p);
-                        p.out.append("; ");
+                        p.out.append(";");
                     }
                     if (ifStmt.getCond() != null) {
                         visit(ifStmt.getCond(), p);
                     }
-                    p.out.append(" ");
                     if (ifStmt.getBody() != null) {
                         visit(ifStmt.getBody(), p);
                     }
                     if (ifStmt.getElseStmt() != null) {
-                        p.out.append(" else ");
+                        p.out.append(" else");
                         visit(ifStmt.getElseStmt(), p);
                     }
                     return ifStmt;
@@ -256,7 +248,7 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                     p.out.append("(");
                     for (int i = 0; i < callExpr.getArgs().size(); i++) {
                         if (i > 0) {
-                            p.out.append(", ");
+                            p.out.append(",");
                         }
                         visit(callExpr.getArgs().get(i), p);
                     }
@@ -280,7 +272,7 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                 public Tree visitBinaryExpr(BinaryExpr binaryExpr, PrintOutputCapture<P> p) {
                     printSpace(binaryExpr.getPrefix(), p);
                     visit(binaryExpr.getX(), p);
-                    p.out.append(" ").append(binaryExpr.getOp()).append(" ");
+                    p.out.append(" ").append(binaryExpr.getOp());
                     visit(binaryExpr.getY(), p);
                     return binaryExpr;
                 }
@@ -300,7 +292,7 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                     p.out.append("{");
                     for (int i = 0; i < interfaceTypeExpr.getMethods().size(); i++) {
                         if (i > 0) {
-                            p.out.append("; ");
+                            p.out.append(";");
                         }
                         visit(interfaceTypeExpr.getMethods().get(i), p);
                     }
@@ -354,7 +346,7 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                     } else if (chanTypeExpr.getDir() == 2) {
                         p.out.append("<-chan ");
                     } else {
-                        p.out.append("chan ");
+                        p.out.append("chan");
                     }
                     if (chanTypeExpr.getValue() != null) {
                         visit(chanTypeExpr.getValue(), p);
@@ -368,7 +360,7 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                     p.out.append("struct {");
                     for (int i = 0; i < structTypeExpr.getFields().size(); i++) {
                         if (i > 0) {
-                            p.out.append("; ");
+                            p.out.append(";");
                         }
                         visit(structTypeExpr.getFields().get(i), p);
                     }
@@ -382,7 +374,7 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                     p.out.append("func(");
                     for (int i = 0; i < funcTypeExpr.getParams().size(); i++) {
                         if (i > 0) {
-                            p.out.append(", ");
+                            p.out.append(",");
                         }
                         visit(funcTypeExpr.getParams().get(i), p);
                     }
@@ -395,7 +387,7 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                             p.out.append("(");
                             for (int i = 0; i < funcTypeExpr.getResults().size(); i++) {
                                 if (i > 0) {
-                                    p.out.append(", ");
+                                    p.out.append(",");
                                 }
                                 visit(funcTypeExpr.getResults().get(i), p);
                             }
@@ -431,7 +423,7 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                     p.out.append("(");
                     for (int i = 0; i < funcType.getParams().size(); i++) {
                         if (i > 0) {
-                            p.out.append(", ");
+                            p.out.append(",");
                         }
                         visit(funcType.getParams().get(i), p);
                     }
@@ -444,7 +436,7 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                             p.out.append("(");
                             for (int i = 0; i < funcType.getResults().size(); i++) {
                                 if (i > 0) {
-                                    p.out.append(", ");
+                                    p.out.append(",");
                                 }
                                 visit(funcType.getResults().get(i), p);
                             }

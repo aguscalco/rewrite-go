@@ -27,7 +27,7 @@ class GoPrinterTest {
                 UUID.randomUUID(),
                 Space.EMPTY,
                 Markers.EMPTY,
-                new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "main", null)
+                new Ident(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "main", null)
             ),
             Collections.emptyList(),
             Collections.emptyList(),
@@ -50,7 +50,7 @@ class GoPrinterTest {
             Space.build("\n"),
             Markers.EMPTY,
             null,
-            new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "hello", null),
+            new Ident(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "hello", null),
             Collections.emptyList(),
             new FuncType(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()),
             new BlockStmt(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, Collections.emptyList(), Space.EMPTY)
@@ -67,7 +67,7 @@ class GoPrinterTest {
                 UUID.randomUUID(),
                 Space.EMPTY,
                 Markers.EMPTY,
-                new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "main", null)
+                new Ident(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "main", null)
             ),
             Collections.emptyList(),
             Collections.singletonList(funcDecl),
@@ -80,7 +80,7 @@ class GoPrinterTest {
         PrintOutputCapture<Integer> capture = new PrintOutputCapture<>(0);
         printer.visit(file, capture);
         
-        assertEquals("package main\nfunc hello()  {}", capture.getOut());
+        assertEquals("package main\nfunc hello() {}", capture.getOut());
     }
     
     @Test
@@ -113,7 +113,7 @@ class GoPrinterTest {
                 UUID.randomUUID(),
                 Space.EMPTY,
                 Markers.EMPTY,
-                new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "main", null)
+                new Ident(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "main", null)
             ),
             Collections.singletonList(importDecl),
             Collections.emptyList(),
@@ -126,7 +126,7 @@ class GoPrinterTest {
         PrintOutputCapture<Integer> capture = new PrintOutputCapture<>(0);
         printer.visit(file, capture);
         
-        assertEquals("package main\nimport \n\t\"fmt\"", capture.getOut());
+        assertEquals("package main\nimport\n\t\"fmt\"", capture.getOut());
     }
     
     @Test
@@ -135,7 +135,7 @@ class GoPrinterTest {
             UUID.randomUUID(),
             Space.EMPTY,
             Markers.EMPTY,
-            Collections.singletonList(new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "x", null)),
+            Collections.singletonList(new Ident(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "x", null)),
             new Ident(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "int", null),
             Collections.singletonList(new BasicLit(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "INT", "42"))
         );
@@ -161,7 +161,7 @@ class GoPrinterTest {
                 UUID.randomUUID(),
                 Space.EMPTY,
                 Markers.EMPTY,
-                new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "main", null)
+                new Ident(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "main", null)
             ),
             Collections.emptyList(),
             Collections.singletonList(genDecl),
@@ -174,7 +174,7 @@ class GoPrinterTest {
         PrintOutputCapture<Integer> capture = new PrintOutputCapture<>(0);
         printer.visit(file, capture);
         
-        assertEquals("package main\nvar x  int =  42", capture.getOut());
+        assertEquals("package main\nvar x int = 42", capture.getOut());
     }
     
     @Test
@@ -218,7 +218,7 @@ class GoPrinterTest {
             Space.build("\n"),
             Markers.EMPTY,
             null,
-            new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "main", null),
+            new Ident(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "main", null),
             Collections.emptyList(),
             new FuncType(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()),
             body
@@ -235,7 +235,7 @@ class GoPrinterTest {
                 UUID.randomUUID(),
                 Space.EMPTY,
                 Markers.EMPTY,
-                new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "main", null)
+                new Ident(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "main", null)
             ),
             Collections.emptyList(),
             Collections.singletonList(funcDecl),
@@ -248,7 +248,7 @@ class GoPrinterTest {
         PrintOutputCapture<Integer> capture = new PrintOutputCapture<>(0);
         printer.visit(file, capture);
         
-        assertEquals("package main\nfunc main()  {\n\tfmt.Println(\"hello\")}", capture.getOut());
+        assertEquals("package main\nfunc main() {\n\tfmt.Println(\"hello\")}", capture.getOut());
     }
     
     @Test
@@ -257,7 +257,7 @@ class GoPrinterTest {
             UUID.randomUUID(),
             Space.build("\n\t"),
             Markers.EMPTY,
-            Collections.singletonList(new BasicLit(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "INT", "42"))
+            Collections.singletonList(new BasicLit(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "INT", "42"))
         );
         
         BlockStmt body = new BlockStmt(
@@ -273,7 +273,7 @@ class GoPrinterTest {
             Space.build("\n"),
             Markers.EMPTY,
             null,
-            new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "getNumber", null),
+            new Ident(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "getNumber", null),
             Collections.emptyList(),
             new FuncType(
                 UUID.randomUUID(),
@@ -304,7 +304,7 @@ class GoPrinterTest {
                 UUID.randomUUID(),
                 Space.EMPTY,
                 Markers.EMPTY,
-                new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "main", null)
+                new Ident(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "main", null)
             ),
             Collections.emptyList(),
             Collections.singletonList(funcDecl),
@@ -317,14 +317,14 @@ class GoPrinterTest {
         PrintOutputCapture<Integer> capture = new PrintOutputCapture<>(0);
         printer.visit(file, capture);
         
-        assertEquals("package main\nfunc getNumber() int  {\n\treturn 42}", capture.getOut());
+        assertEquals("package main\nfunc getNumber() int {\n\treturn 42}", capture.getOut());
     }
     
     @Test
     void printBinaryExpression() {
         BinaryExpr binaryExpr = new BinaryExpr(
             UUID.randomUUID(),
-            Space.EMPTY,
+            Space.build(" "),
             Markers.EMPTY,
             new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "a", null),
             "+",
@@ -361,7 +361,7 @@ class GoPrinterTest {
             Space.build("\n"),
             Markers.EMPTY,
             null,
-            new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "add", null),
+            new Ident(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "add", null),
             Collections.emptyList(),
             new FuncType(
                 UUID.randomUUID(),
@@ -392,7 +392,7 @@ class GoPrinterTest {
                 UUID.randomUUID(),
                 Space.EMPTY,
                 Markers.EMPTY,
-                new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "main", null)
+                new Ident(UUID.randomUUID(), Space.build(" "), Markers.EMPTY, "main", null)
             ),
             Collections.emptyList(),
             Collections.singletonList(funcDecl),
@@ -405,7 +405,7 @@ class GoPrinterTest {
         PrintOutputCapture<Integer> capture = new PrintOutputCapture<>(0);
         printer.visit(file, capture);
         
-        assertEquals("package main\nfunc add(a, b  int) int  {\n\treturn a +  b}", capture.getOut());
+        assertEquals("package main\nfunc add(a, b int) int {\n\treturn a + b}", capture.getOut());
     }
 
     private String print(Go node) {
@@ -451,7 +451,7 @@ class GoPrinterTest {
         ImportSpec osSpec = new ImportSpec(UUID.randomUUID(), Space.build("\n\t"), Markers.EMPTY, null,
             new BasicLit(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "STRING", "\"os\""));
         ImportDecl decl = new ImportDecl(UUID.randomUUID(), Space.build("\n"), Markers.EMPTY,
-            Arrays.asList(fmtSpec, osSpec), true, Space.EMPTY);
+            Arrays.asList(fmtSpec, osSpec), true, Space.build("\n"));
 
         assertEquals("\nimport (\n\t\"fmt\"\n\t\"os\"\n)", print(decl));
     }

@@ -534,7 +534,9 @@ func (p *Printer) printField(field *proto.Field) {
 	p.printSpace(field.Prefix)
 	for i, name := range field.Names {
 		if i > 0 {
-			p.write(",")
+			// Names are plain strings with no prefix, so the separator spacing has to
+			// come from here.
+			p.write(", ")
 		}
 		p.write(name)
 	}

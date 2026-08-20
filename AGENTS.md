@@ -6,17 +6,24 @@ OpenRewrite language module for Go: parse Go source into a Lossless Semantic Tre
 
 ## The One Thing to Understand First
 
-This is a **two-runtime project split across a protobuf schema**, and the two halves are **not yet connected**:
+This is a **two-runtime project split across a protobuf schema**:
 
 ```
-Go source ──> parser/ (Go)  ──> proto bytes ──X──> src/main/java (Java) ──> recipes ──> GoPrinter
-             go/parser+go/types     go.proto        GoDeserializer
+Go source ──> parser/ (Go) ──> proto bytes ──> src/main/java (Java) ──> recipes ──> GoPrinter
+             go/parser + go/types   go.proto     GoParser + GoDeserializer
 ```
 
-- `parser/` is a Go **library** (`package parser`) — there is no `main`, no CLI, nothing that writes protobuf bytes to a stream.
-- The Java side has **no `Parser` implementation** — nothing in `src/main/java` invokes the Go binary or reads proto bytes off a wire. `GoDeserializer` takes an already-built `GoProto.GoFile` object.
+`GoParser` spawns the `rewrite-go-parser` binary (built from `parser/cmd/parser`) and streams a whole batch through one subprocess. Framing is length-prefixed with a per-file status byte, so one unparseable file does not fail the batch — it comes back as a `ParseError`.
 
-**Consequence:** recipes cannot be run against real `.go` files today. `rewriteRun` / `RewriteTest` does not work here, and no test uses it. Every Java test hand-constructs an LST in code. Do not write a test that assumes source-string-in / source-string-out until that bridge exists.
+**Build the binary before running the Java tests**, or `GoParserTest` skips:
+
+```bash
+cd parser && go build -o rewrite-go-parser ./cmd/parser
+```
+
+Point `GoParser` at it with `GoParser.builder().parserBinary(path)`, the `rewrite.go.parser` system property, or `REWRITE_GO_PARSER`. Otherwise it is looked up on `PATH`.
+
+**Most tests still hand-construct LSTs.** `RewriteTest` / `rewriteRun` is still not used anywhere; `GoParserTest` is the only test that goes through real source. Recipe tests build trees directly — see the test `AGENTS.md`.
 
 ## Layer Widths (they are not equal — this is the recurring bug source)
 
@@ -37,10 +44,11 @@ Adding a Go construct end-to-end means touching **all five**, in that order — 
 | Path | What lives there |
 |---|---|
 | `parser/` | Go-native parser library (own `go.mod`) |
+| `parser/cmd/parser/` | the `rewrite-go-parser` binary — the Java side of the bridge talks to this |
 | `parser/proto/go.proto` | The contract between the two runtimes — source of truth for both sides |
 | `parser/lst/` | Go AST → proto LST |
 | `parser/printer/` | proto LST → Go source (Go-side printer) |
-| `src/main/java/org/openrewrite/go/` | Recipe implementations |
+| `src/main/java/org/openrewrite/go/` | Recipe implementations, plus `GoParser` |
 | `src/main/java/org/openrewrite/go/tree/` | Java LST model, visitor, printer |
 | `src/main/java/org/openrewrite/go/internal/` | proto → Java LST deserialization |
 | `src/main/resources/META-INF/rewrite/go.yml` | Declarative composite recipes |
