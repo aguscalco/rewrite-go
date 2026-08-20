@@ -32,6 +32,10 @@ func TestRoundTrip(t *testing.T) {
 		{"grouped var decl", "package main\n\nvar (\n\tx int\n\ty string\n)\n"},
 		{"method", "package main\n\nfunc (p Point) X() int {\n\treturn p.x\n}\n"},
 		{"if statement", "package main\n\nfunc main() {\n\tif err != nil {\n\t\treturn\n\t}\n}\n"},
+		{"doc comment", "package main\n\n// Greet says hello.\nfunc Greet() {\n}\n"},
+		{"trailing comment", "package main\n\nfunc main() {\n\tx := 1 // why\n}\n"},
+		{"block comment", "package main\n\n/* block */\nfunc main() {\n}\n"},
+		{"package doc", "// Package main does things.\npackage main\n"},
 		{"blank lines preserved", "package main\n\n\nfunc main() {\n\n\tx := 1\n\n}\n"},
 	}
 

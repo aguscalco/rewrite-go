@@ -16,9 +16,9 @@ Just as rewrite-java enables migrations from Java 17 → 25, rewrite-go enables 
 - **Printer**: Java-side `GoPrinter` and Go-side `printer` package
 - **Visitor Pattern**: `GoVisitor` traversal for transformations
 
-The Go-side parse→print round trip is byte-exact for package clauses, imports (grouped, single, aliased), functions and methods, parameters and results, calls, assignments, var and type declarations, if statements, and blank-line preservation — covered by `TestRoundTrip`.
+The parse→print round trip is byte-exact for package clauses, imports (grouped, single, aliased), functions and methods, parameters and results, calls, assignments, var and type declarations, if statements, blank lines, and comments (doc, trailing, block, package doc) — covered by `TestRoundTrip` on the Go side and `GoParserTest` end to end.
 
-**Known gaps.** Type attribution is single-file: the parser runs `go/types` with a nil importer, so imported symbols are not resolved. Comments are not carried through the LST. Struct and interface bodies do not round trip, because the proto models no whitespace around their braces (`TestRoundTripKnownGaps`). Recipes can be run against real `.go` files: `GoParser` shells out to the `rewrite-go-parser` binary built from `parser/cmd/parser`. Most recipe tests still exercise hand-built LSTs rather than source text.
+**Known gaps.** Type attribution is single-file: the parser runs `go/types` with a nil importer, so imported symbols are not resolved. Comments survive a round trip but are unmodelled — they ride inside `Space.whitespace`, so a recipe cannot inspect or rewrite them. Struct and interface bodies do not round trip, because the proto models no whitespace around their braces (`TestRoundTripKnownGaps`). Recipes can be run against real `.go` files: `GoParser` shells out to the `rewrite-go-parser` binary built from `parser/cmd/parser`. Most recipe tests still exercise hand-built LSTs rather than source text.
 
 #### 2. Core Recipes
 
@@ -210,7 +210,7 @@ The Go-side parse→print round trip is byte-exact for package clauses, imports 
 | **Performance** | ✅ Optimization recipes | 🚧 Performance patterns | Planned |
 | **Code Style** | ✅ Checkstyle, Spotless | 🚧 Go fmt, golangci-lint | Planned |
 | **Type System** | ✅ Full type attribution | 🚧 Single-file only | Partial |
-| **Format Preservation** | ✅ Lossless | 🚧 Lossless except comments | Mostly |
+| **Format Preservation** | ✅ Lossless | ✅ Lossless incl. comments | Complete |
 | **Build Tools** | ✅ Maven, Gradle | ✅ Go modules | Complete |
 
 ## What We Can Do Today
@@ -260,7 +260,8 @@ All of the above operate on an LST you construct or deserialize yourself — see
 - [x] Maven and Gradle support
 - [x] Java↔Go bridge (`GoParser` plus the `rewrite-go-parser` binary)
 - [x] Byte-exact parse→print round trip (except struct/interface bodies)
-- [ ] Comment preservation
+- [x] Comment preservation
+- [ ] Comments modelled in the LST rather than carried as opaque whitespace
 
 ### Phase 2: Go Version Migrations (Next)
 - [ ] `interface{}` → `any` (Go 1.18+)

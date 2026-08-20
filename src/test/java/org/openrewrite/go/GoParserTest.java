@@ -151,4 +151,16 @@ class GoParserTest {
             () -> p.parseInputs(inputs, null, new InMemoryExecutionContext()).count());
         assertTrue(e.getMessage().contains("go build -o rewrite-go-parser"), e.getMessage());
     }
+
+    /**
+     * Comments live inside Space and must survive the whole path. A recipe run that
+     * stripped comments from a codebase would make the module unusable, so this is the
+     * highest-stakes property here.
+     */
+    @Test
+    void preservesComments() {
+        String source = "// Package doc.\npackage main\n\n// Greet says hello.\nfunc Greet() {\n\tx := 1 // trailing\n\t/* block */\n}\n";
+        GoFile file = assertInstanceOf(GoFile.class, parse(source).get(0));
+        assertEquals(source, print(file));
+    }
 }

@@ -40,7 +40,7 @@ Type attribution comes from `b.info` via `buildGoType` / `convertType`.
 
 ## Pitfalls
 
-- **Comments are dropped entirely.** `parser.ParseComments` is passed upstream, and `proto.Space` has a `repeated Comment comments` field — but `builder.go` contains no reference to `Comment` or `.Doc`. Every doc comment and inline comment is lost. This is the largest remaining losslessness gap.
+- **Comments are preserved but not modelled.** `prefix()` claims every byte between tokens, so comment text rides along inside `Space.whitespace` and prints back verbatim — doc comments, trailing comments, block comments and package docs all round trip. But `proto.Space.comments` is unused, so a recipe cannot inspect, move or rewrite a comment; to the LST it is opaque whitespace. Structuring them is worthwhile, and is not a data-loss problem.
 - **Struct and interface bodies do not round trip.** The proto models neither the space before the opening brace nor the one before the closing brace, so `struct{}` and `struct {\n}` are indistinguishable once parsed. See `TestRoundTripKnownGaps`.
 - **`spaceAfter` is gone.** It scanned forward to end of line and captured trailing content, not only whitespace. Nothing needs it now that closing tokens take a `prefix()` before being consumed.
 - **Builds nodes the Java side cannot receive.** `buildForStmt`, `buildRangeStmt`, `buildCompositeLit` produce valid proto, but `src/main/java/.../tree/` has no matching class. `GoDeserializer` now throws rather than dropping them, so work here surfaces as a loud failure on the Java side instead of a silent one.
