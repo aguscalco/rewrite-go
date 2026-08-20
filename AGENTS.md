@@ -87,7 +87,7 @@ cd parser && go build ./... && go test ./...
 
 `README.md`, `PROJECT_SUMMARY.md`, and `CAPABILITIES.md` describe intent and roadmap, and have drifted from the code. Verified discrepancies:
 
-- `CAPABILITIES.md` marks parser/LST/printer "Complete ✅". The Go round trip is byte-exact for 15 constructs now, but comments are still dropped entirely and struct/interface bodies do not round trip.
+- `CAPABILITIES.md` marks parser/LST/printer "Complete ✅". The round trip is byte-exact for 19 constructs including comments, but struct and interface bodies still do not round trip.
 - `README.md` documents `search/` as holding search recipes. It is empty.
 - `README.md` and `CONTRIBUTING.md` show `git clone` from `openrewrite/rewrite-go`; the actual remote is `aguscalco/rewrite-go`.
 
