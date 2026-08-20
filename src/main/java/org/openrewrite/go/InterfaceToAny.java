@@ -21,7 +21,9 @@ public class InterfaceToAny extends Recipe {
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         return new GoVisitor<ExecutionContext>() {
-            public Tree visitInterfaceTypeExpr(InterfaceTypeExpr interfaceExpr, ExecutionContext ctx) {
+            @Override
+            public Tree visitInterfaceTypeExpr(InterfaceTypeExpr e, ExecutionContext ctx) {
+                InterfaceTypeExpr interfaceExpr = (InterfaceTypeExpr) super.visitInterfaceTypeExpr(e, ctx);
                 if (interfaceExpr.getMethods() == null || interfaceExpr.getMethods().isEmpty()) {
                     return new Ident(
                         Tree.randomId(),

@@ -289,4 +289,60 @@ class UseSlicesPackageTest {
         assertEquals("fmt", pkgIdent.getName());
         assertEquals("Println", resultSelector.getSel().getName());
     }
+
+    @Test
+    void swapsTheSortImportForSlices() {
+        GoFile result = (GoFile) new UseSlicesPackage().getVisitor()
+            .visit(fileCalling("sort", "Slice"), new InMemoryExecutionContext());
+
+        java.util.List<String> paths = new java.util.ArrayList<>();
+        for (ImportDecl decl : result.getImports()) {
+            for (ImportSpec spec : decl.getSpecs()) {
+                paths.add(spec.getPath().getValue());
+            }
+        }
+        assertEquals(Collections.singletonList("\"slices\""), paths);
+    }
+
+    @Test
+    void keepsTheSortImportWhenAnUnconvertedSortCallRemains() {
+        GoFile result = (GoFile) new UseSlicesPackage().getVisitor()
+            .visit(fileCalling("sort", "Ints"), new InMemoryExecutionContext());
+
+        assertEquals(1, result.getImports().size());
+        assertEquals("\"sort\"", result.getImports().get(0).getSpecs().get(0).getPath().getValue());
+    }
+
+    /** package main; import "sort"; func main() { <pkg>.<fn>(x) } */
+    private GoFile fileCalling(String pkg, String fn) {
+        ImportDecl importDecl = new ImportDecl(
+            UUID.randomUUID(), Space.build("\n"), Markers.EMPTY,
+            Collections.singletonList(new ImportSpec(
+                UUID.randomUUID(), Space.build("\n\t"), Markers.EMPTY, null,
+                new BasicLit(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "STRING", "\"sort\""))),
+            false, Space.EMPTY);
+
+        CallExpr call = new CallExpr(
+            UUID.randomUUID(), Space.EMPTY, Markers.EMPTY,
+            new SelectorExpr(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY,
+                new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, pkg, null),
+                new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, fn, null), null),
+            Collections.singletonList(new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "x", null)),
+            false, null);
+
+        FuncDecl funcDecl = new FuncDecl(
+            UUID.randomUUID(), Space.build("\n"), Markers.EMPTY, null,
+            new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "main", null),
+            Collections.emptyList(),
+            new FuncType(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()),
+            new BlockStmt(UUID.randomUUID(), Space.build(" "), Markers.EMPTY,
+                Collections.singletonList(new ExprStmt(UUID.randomUUID(), Space.build("\n\t"), Markers.EMPTY, call)),
+                Space.EMPTY));
+
+        return new GoFile(
+            UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, Paths.get("test.go"), StandardCharsets.UTF_8, false,
+            new PackageClause(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY,
+                new Ident(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, "main", null)),
+            Collections.singletonList(importDecl), Collections.singletonList(funcDecl), Space.EMPTY, null, null);
+    }
 }

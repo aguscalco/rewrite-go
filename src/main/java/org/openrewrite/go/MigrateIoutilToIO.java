@@ -4,6 +4,7 @@ import org.openrewrite.ExecutionContext;
 import org.openrewrite.Recipe;
 import org.openrewrite.Tree;
 import org.openrewrite.TreeVisitor;
+import org.openrewrite.go.internal.GoImports;
 import org.openrewrite.go.tree.*;
 
 public class MigrateIoutilToIO extends Recipe {
@@ -21,16 +22,33 @@ public class MigrateIoutilToIO extends Recipe {
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         return new GoVisitor<ExecutionContext>() {
-            public Tree visitImportSpec(ImportSpec importSpec, ExecutionContext ctx) {
-                String path = importSpec.getPath().getValue();
-                if (path.contains("io/ioutil")) {
-                    BasicLit newPath = importSpec.getPath().withValue(path.replace("io/ioutil", "io"));
-                    return importSpec.withPath(newPath);
+            private boolean usedIo;
+            private boolean usedOs;
+            private boolean sawIoutil;
+            
+            @Override
+            public Tree visitGoFile(GoFile goFile, ExecutionContext ctx) {
+                usedIo = false;
+                usedOs = false;
+                sawIoutil = false;
+                GoFile g = (GoFile) super.visitGoFile(goFile, ctx);
+                if (!sawIoutil) {
+                    return g;
                 }
-                return importSpec;
+                // Replace the ioutil import with only the packages the rewritten call sites use.
+                g = GoImports.removeImport(g, "io/ioutil");
+                if (usedIo) {
+                    g = GoImports.addImport(g, "io");
+                }
+                if (usedOs) {
+                    g = GoImports.addImport(g, "os");
+                }
+                return g;
             }
             
-            public Tree visitSelectorExpr(SelectorExpr selectorExpr, ExecutionContext ctx) {
+            @Override
+            public Tree visitSelectorExpr(SelectorExpr sel, ExecutionContext ctx) {
+                SelectorExpr selectorExpr = (SelectorExpr) super.visitSelectorExpr(sel, ctx);
                 if (!(selectorExpr.getX() instanceof Ident)) {
                     return selectorExpr;
                 }
@@ -46,24 +64,32 @@ public class MigrateIoutilToIO extends Recipe {
                 
                 switch (methodName) {
                     case "ReadAll":
-                    case "ReadFile":
-                        newPkg = "io";
-                        break;
-                    case "WriteFile":
-                        newPkg = "os";
-                        break;
-                    case "ReadDir":
-                        newPkg = "os";
-                        newMethod = "ReadDir";
-                        break;
                     case "NopCloser":
-                        newPkg = "io";
-                        break;
                     case "Discard":
                         newPkg = "io";
                         break;
+                    case "ReadFile":
+                    case "WriteFile":
+                    case "ReadDir":
+                        newPkg = "os";
+                        break;
+                    case "TempDir":
+                        newPkg = "os";
+                        newMethod = "MkdirTemp";
+                        break;
+                    case "TempFile":
+                        newPkg = "os";
+                        newMethod = "CreateTemp";
+                        break;
                     default:
                         return selectorExpr;
+                }
+                
+                sawIoutil = true;
+                if ("io".equals(newPkg)) {
+                    usedIo = true;
+                } else {
+                    usedOs = true;
                 }
                 
                 Ident newPkgIdent = pkgIdent.withName(newPkg);

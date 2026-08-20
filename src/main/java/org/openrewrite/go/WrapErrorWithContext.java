@@ -1,5 +1,7 @@
 package org.openrewrite.go;
 
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.Option;
 import org.openrewrite.Recipe;
@@ -7,12 +9,14 @@ import org.openrewrite.Tree;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.go.tree.*;
 
+@Value
+@EqualsAndHashCode(callSuper = false)
 public class WrapErrorWithContext extends Recipe {
     
     @Option(displayName = "Context message",
             description = "The context message to wrap the error with.",
             example = "failed to process request")
-    private String contextMessage;
+    String contextMessage;
     
     @Override
     public String getDisplayName() {
@@ -27,6 +31,7 @@ public class WrapErrorWithContext extends Recipe {
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         return new GoVisitor<ExecutionContext>() {
+            @Override
             public Tree visitReturnStmt(ReturnStmt returnStmt, ExecutionContext ctx) {
                 if (returnStmt.getResults().size() != 1) {
                     return returnStmt;
