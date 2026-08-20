@@ -959,22 +959,25 @@ func (b *Builder) spaceBefore(pos token.Pos) *proto.Space {
 		return &proto.Space{}
 	}
 
-	start := 0
-	if position.Offset > 0 {
-		start = position.Offset - 1
-		for start > 0 && b.src[start-1] != '\n' {
-			start--
-		}
+	// Only the run of whitespace immediately preceding the node belongs in a Space.
+	// Scanning back to the start of the line would swallow real source tokens, which the
+	// printer would then emit a second time.
+	start := position.Offset
+	for start > 0 && isSpace(b.src[start-1]) {
+		start--
 	}
 
 	if start >= position.Offset {
 		return &proto.Space{}
 	}
 
-	whitespace := string(b.src[start:position.Offset])
 	return &proto.Space{
-		Whitespace: whitespace,
+		Whitespace: string(b.src[start:position.Offset]),
 	}
+}
+
+func isSpace(c byte) bool {
+	return c == ' ' || c == '\t' || c == '\n' || c == '\r'
 }
 
 func (b *Builder) spaceAfter(pos token.Pos) *proto.Space {

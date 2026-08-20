@@ -140,7 +140,7 @@ func (p *Printer) printValueSpec(vs *proto.ValueSpec) {
 
 	if vs.Type != nil {
 		p.write(" ")
-		p.printGoType(vs.Type)
+		p.printExpr(vs.Type)
 	}
 
 	if len(vs.Values) > 0 {
@@ -163,7 +163,7 @@ func (p *Printer) printTypeSpec(ts *proto.TypeSpec) {
 	}
 
 	p.write(" ")
-	p.printGoType(ts.Type)
+	p.printExpr(ts.Type)
 }
 
 func (p *Printer) printStmt(stmt *proto.Stmt) {
@@ -422,7 +422,7 @@ func (p *Printer) printField(field *proto.Field) {
 	}
 	if field.Type != nil {
 		p.write(" ")
-		p.printGoType(field.Type)
+		p.printExpr(field.Type)
 	}
 	if field.Tag != "" {
 		p.write(" ")
@@ -443,7 +443,7 @@ func (p *Printer) printFuncType(ft *proto.FuncType) {
 	if len(ft.Results) > 0 {
 		p.write(" ")
 		if len(ft.Results) == 1 && len(ft.Results[0].Names) == 0 {
-			p.printGoType(ft.Results[0].Type)
+			p.printExpr(ft.Results[0].Type)
 		} else {
 			p.write("(")
 			for i, result := range ft.Results {
