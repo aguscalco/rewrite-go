@@ -355,4 +355,129 @@ class GoDeserializerTest {
             .setLeastSigBits(uuid.getLeastSignificantBits())
             .build();
     }
+
+    private GoProto.Expr identExpr(String name) {
+        return GoProto.Expr.newBuilder()
+            .setIdent(GoProto.Ident.newBuilder()
+                .setId(newUUID())
+                .setPrefix(GoProto.Space.newBuilder().setWhitespace("").build())
+                .setMarkers(GoProto.Markers.newBuilder().setId(newUUID()).build())
+                .setName(name)
+                .build())
+            .build();
+    }
+
+    @Test
+    void deserializeSliceTypeExpr() {
+        GoProto.Expr proto = GoProto.Expr.newBuilder()
+            .setSliceTypeExpr(GoProto.SliceTypeExpr.newBuilder()
+                .setId(newUUID())
+                .setPrefix(GoProto.Space.newBuilder().setWhitespace("").build())
+                .setMarkers(GoProto.Markers.newBuilder().setId(newUUID()).build())
+                .setElt(identExpr("string"))
+                .build())
+            .build();
+
+        Expr result = deserializeExprViaValueSpec(proto);
+        assertInstanceOf(SliceTypeExpr.class, result);
+        assertEquals("string", ((Ident) ((SliceTypeExpr) result).getElt()).getName());
+    }
+
+    @Test
+    void deserializePointerTypeExpr() {
+        GoProto.Expr proto = GoProto.Expr.newBuilder()
+            .setPointerTypeExpr(GoProto.PointerTypeExpr.newBuilder()
+                .setId(newUUID())
+                .setPrefix(GoProto.Space.newBuilder().setWhitespace("").build())
+                .setMarkers(GoProto.Markers.newBuilder().setId(newUUID()).build())
+                .setBase(identExpr("MyError"))
+                .build())
+            .build();
+
+        Expr result = deserializeExprViaValueSpec(proto);
+        assertInstanceOf(PointerTypeExpr.class, result);
+        assertEquals("MyError", ((Ident) ((PointerTypeExpr) result).getBase()).getName());
+    }
+
+    /**
+     * A proto node with no counterpart in org.openrewrite.go.tree must fail loudly. Silently
+     * dropping it would corrupt the LST -- a for loop would simply vanish from the file.
+     */
+    @Test
+    void unsupportedStmtKindThrowsRatherThanBeingDropped() {
+        GoProto.Stmt proto = GoProto.Stmt.newBuilder()
+            .setForStmt(GoProto.ForStmt.newBuilder()
+                .setId(newUUID())
+                .setPrefix(GoProto.Space.newBuilder().setWhitespace("").build())
+                .setMarkers(GoProto.Markers.newBuilder().setId(newUUID()).build())
+                .build())
+            .build();
+
+        GoProto.GoFile file = fileWithFuncBody(proto);
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+            () -> new GoDeserializer().deserialize(file));
+        assertTrue(e.getMessage().contains("FOR_STMT"), e.getMessage());
+    }
+
+    private Expr deserializeExprViaValueSpec(GoProto.Expr typeExpr) {
+        GoProto.GoFile file = GoProto.GoFile.newBuilder()
+            .setId(newUUID())
+            .setPrefix(GoProto.Space.newBuilder().setWhitespace("").build())
+            .setMarkers(GoProto.Markers.newBuilder().setId(newUUID()).build())
+            .setSourcePath("test.go")
+            .setCharsetName("UTF-8")
+            .addDeclarations(GoProto.Decl.newBuilder()
+                .setGenDecl(GoProto.GenDecl.newBuilder()
+                    .setId(newUUID())
+                    .setPrefix(GoProto.Space.newBuilder().setWhitespace("").build())
+                    .setMarkers(GoProto.Markers.newBuilder().setId(newUUID()).build())
+                    .setTok("var")
+                    .addSpecs(GoProto.Spec.newBuilder()
+                        .setValueSpec(GoProto.ValueSpec.newBuilder()
+                            .setId(newUUID())
+                            .setPrefix(GoProto.Space.newBuilder().setWhitespace("").build())
+                            .setMarkers(GoProto.Markers.newBuilder().setId(newUUID()).build())
+                            .setType(typeExpr)
+                            .build())
+                        .build())
+                    .build())
+                .build())
+            .setEof(GoProto.Space.newBuilder().setWhitespace("").build())
+            .build();
+
+        GoFile go = new GoDeserializer().deserialize(file);
+        GenDecl decl = (GenDecl) go.getDeclarations().get(0);
+        return ((ValueSpec) decl.getSpecs().get(0)).getType();
+    }
+
+    private GoProto.GoFile fileWithFuncBody(GoProto.Stmt stmt) {
+        return GoProto.GoFile.newBuilder()
+            .setId(newUUID())
+            .setPrefix(GoProto.Space.newBuilder().setWhitespace("").build())
+            .setMarkers(GoProto.Markers.newBuilder().setId(newUUID()).build())
+            .setSourcePath("test.go")
+            .setCharsetName("UTF-8")
+            .addDeclarations(GoProto.Decl.newBuilder()
+                .setFuncDecl(GoProto.FuncDecl.newBuilder()
+                    .setId(newUUID())
+                    .setPrefix(GoProto.Space.newBuilder().setWhitespace("").build())
+                    .setMarkers(GoProto.Markers.newBuilder().setId(newUUID()).build())
+                    .setName(GoProto.Ident.newBuilder()
+                        .setId(newUUID())
+                        .setPrefix(GoProto.Space.newBuilder().setWhitespace("").build())
+                        .setMarkers(GoProto.Markers.newBuilder().setId(newUUID()).build())
+                        .setName("main")
+                        .build())
+                    .setBody(GoProto.BlockStmt.newBuilder()
+                        .setId(newUUID())
+                        .setPrefix(GoProto.Space.newBuilder().setWhitespace("").build())
+                        .setMarkers(GoProto.Markers.newBuilder().setId(newUUID()).build())
+                        .addStmts(stmt)
+                        .build())
+                    .build())
+                .build())
+            .setEof(GoProto.Space.newBuilder().setWhitespace("").build())
+            .build();
+    }
 }
