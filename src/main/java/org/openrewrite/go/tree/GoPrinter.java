@@ -242,6 +242,54 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                 }
                 
                 @Override
+                public Tree visitForStmt(ForStmt forStmt, PrintOutputCapture<P> p) {
+                    printSpace(forStmt.getPrefix(), p);
+                    p.out.append("for");
+                    if (forStmt.getInit() != null) {
+                        visit(forStmt.getInit(), p);
+                        p.out.append(";");
+                    }
+                    if (forStmt.getCond() != null) {
+                        visit(forStmt.getCond(), p);
+                        p.out.append(";");
+                    }
+                    if (forStmt.getPost() != null) {
+                        visit(forStmt.getPost(), p);
+                    }
+                    if (forStmt.getBody() != null) {
+                        visit(forStmt.getBody(), p);
+                    }
+                    return forStmt;
+                }
+                
+                @Override
+                public Tree visitRangeStmt(RangeStmt rangeStmt, PrintOutputCapture<P> p) {
+                    printSpace(rangeStmt.getPrefix(), p);
+                    p.out.append("for");
+                    if (rangeStmt.getKey() != null) {
+                        visit(rangeStmt.getKey(), p);
+                        if (rangeStmt.getValue() != null) {
+                            p.out.append(",");
+                            visit(rangeStmt.getValue(), p);
+                        }
+                        p.out.append(" := range ");
+                    }
+                    visit(rangeStmt.getX(), p);
+                    if (rangeStmt.getBody() != null) {
+                        visit(rangeStmt.getBody(), p);
+                    }
+                    return rangeStmt;
+                }
+                
+                @Override
+                public Tree visitIncDecStmt(IncDecStmt incDecStmt, PrintOutputCapture<P> p) {
+                    printSpace(incDecStmt.getPrefix(), p);
+                    visit(incDecStmt.getX(), p);
+                    p.out.append(incDecStmt.getTok());
+                    return incDecStmt;
+                }
+                
+                @Override
                 public Tree visitCallExpr(CallExpr callExpr, PrintOutputCapture<P> p) {
                     printSpace(callExpr.getPrefix(), p);
                     visit(callExpr.getFun(), p);

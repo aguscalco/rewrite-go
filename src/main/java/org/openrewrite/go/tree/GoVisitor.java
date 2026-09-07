@@ -156,6 +156,48 @@ public class GoVisitor<P> extends TreeVisitor<Tree, P> {
         return i;
     }
     
+    public Tree visitForStmt(ForStmt forStmt, P p) {
+        ForStmt f = forStmt;
+        if (f.getInit() != null) {
+            f = f.withInit((Stmt) visit(f.getInit(), p));
+        }
+        if (f.getCond() != null) {
+            f = f.withCond((Expr) visit(f.getCond(), p));
+        }
+        if (f.getPost() != null) {
+            f = f.withPost((Stmt) visit(f.getPost(), p));
+        }
+        if (f.getBody() != null) {
+            f = f.withBody((BlockStmt) visit(f.getBody(), p));
+        }
+        return f;
+    }
+    
+    public Tree visitRangeStmt(RangeStmt rangeStmt, P p) {
+        RangeStmt r = rangeStmt;
+        if (r.getKey() != null) {
+            r = r.withKey((Expr) visit(r.getKey(), p));
+        }
+        if (r.getValue() != null) {
+            r = r.withValue((Expr) visit(r.getValue(), p));
+        }
+        if (r.getX() != null) {
+            r = r.withX((Expr) visit(r.getX(), p));
+        }
+        if (r.getBody() != null) {
+            r = r.withBody((BlockStmt) visit(r.getBody(), p));
+        }
+        return r;
+    }
+    
+    public Tree visitIncDecStmt(IncDecStmt incDecStmt, P p) {
+        IncDecStmt i = incDecStmt;
+        if (i.getX() != null) {
+            i = i.withX((Expr) visit(i.getX(), p));
+        }
+        return i;
+    }
+    
     public Tree visitCallExpr(CallExpr callExpr, P p) {
         CallExpr c = callExpr;
         c = c.withFun((Expr) visit(c.getFun(), p));

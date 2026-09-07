@@ -211,6 +211,12 @@ public class GoDeserializer {
             return deserializeReturnStmt(proto.getReturnStmt());
         } else if (proto.hasIfStmt()) {
             return deserializeIfStmt(proto.getIfStmt());
+        } else if (proto.hasForStmt()) {
+            return deserializeForStmt(proto.getForStmt());
+        } else if (proto.hasRangeStmt()) {
+            return deserializeRangeStmt(proto.getRangeStmt());
+        } else if (proto.hasIncDecStmt()) {
+            return deserializeIncDecStmt(proto.getIncDecStmt());
         }
         throw unsupported("Stmt", proto.getStmtCase().name());
     }
@@ -244,6 +250,41 @@ public class GoDeserializer {
             proto.hasCond() ? deserializeExpr(proto.getCond()) : null,
             proto.hasBody() ? deserializeBlockStmt(proto.getBody()) : null,
             proto.hasElseStmt() ? deserializeStmt(proto.getElseStmt()) : null
+        );
+    }
+    
+    private ForStmt deserializeForStmt(GoProto.ForStmt proto) {
+        return new ForStmt(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            proto.hasInit() ? deserializeStmt(proto.getInit()) : null,
+            proto.hasCond() ? deserializeExpr(proto.getCond()) : null,
+            proto.hasPost() ? deserializeStmt(proto.getPost()) : null,
+            proto.hasBody() ? deserializeBlockStmt(proto.getBody()) : null
+        );
+    }
+    
+    private RangeStmt deserializeRangeStmt(GoProto.RangeStmt proto) {
+        return new RangeStmt(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            proto.hasKey() ? deserializeExpr(proto.getKey()) : null,
+            proto.hasValue() ? deserializeExpr(proto.getValue()) : null,
+            proto.hasX() ? deserializeExpr(proto.getX()) : null,
+            proto.getTok(),
+            proto.hasBody() ? deserializeBlockStmt(proto.getBody()) : null
+        );
+    }
+    
+    private IncDecStmt deserializeIncDecStmt(GoProto.IncDecStmt proto) {
+        return new IncDecStmt(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            deserializeExpr(proto.getX()),
+            proto.getTok()
         );
     }
     

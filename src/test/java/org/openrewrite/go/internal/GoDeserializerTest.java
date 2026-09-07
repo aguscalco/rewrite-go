@@ -401,12 +401,12 @@ class GoDeserializerTest {
 
     /**
      * A proto node with no counterpart in org.openrewrite.go.tree must fail loudly. Silently
-     * dropping it would corrupt the LST -- a for loop would simply vanish from the file.
+     * dropping it would corrupt the LST -- a switch statement would simply vanish from the file.
      */
     @Test
     void unsupportedStmtKindThrowsRatherThanBeingDropped() {
         GoProto.Stmt proto = GoProto.Stmt.newBuilder()
-            .setForStmt(GoProto.ForStmt.newBuilder()
+            .setSwitchStmt(GoProto.SwitchStmt.newBuilder()
                 .setId(newUUID())
                 .setPrefix(GoProto.Space.newBuilder().setWhitespace("").build())
                 .setMarkers(GoProto.Markers.newBuilder().setId(newUUID()).build())
@@ -417,7 +417,7 @@ class GoDeserializerTest {
 
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
             () -> new GoDeserializer().deserialize(file));
-        assertTrue(e.getMessage().contains("FOR_STMT"), e.getMessage());
+        assertTrue(e.getMessage().contains("SWITCH_STMT"), e.getMessage());
     }
 
     private Expr deserializeExprViaValueSpec(GoProto.Expr typeExpr) {
