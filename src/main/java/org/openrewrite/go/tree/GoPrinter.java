@@ -290,6 +290,19 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                 }
                 
                 @Override
+                public Tree visitDeferStmt(DeferStmt deferStmt, PrintOutputCapture<P> p) {
+                    printSpace(deferStmt.getPrefix(), p);
+                    p.out.append("defer");
+                    if (deferStmt.getCall() != null) {
+                        if (deferStmt.getCall().getPrefix() == null || deferStmt.getCall().getPrefix().isEmpty()) {
+                            p.out.append(" ");
+                        }
+                        visit(deferStmt.getCall(), p);
+                    }
+                    return deferStmt;
+                }
+                
+                @Override
                 public Tree visitCallExpr(CallExpr callExpr, PrintOutputCapture<P> p) {
                     printSpace(callExpr.getPrefix(), p);
                     visit(callExpr.getFun(), p);

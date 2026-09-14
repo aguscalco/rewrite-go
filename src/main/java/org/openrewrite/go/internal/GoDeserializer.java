@@ -217,6 +217,8 @@ public class GoDeserializer {
             return deserializeRangeStmt(proto.getRangeStmt());
         } else if (proto.hasIncDecStmt()) {
             return deserializeIncDecStmt(proto.getIncDecStmt());
+        } else if (proto.hasDeferStmt()) {
+            return deserializeDeferStmt(proto.getDeferStmt());
         }
         throw unsupported("Stmt", proto.getStmtCase().name());
     }
@@ -285,6 +287,15 @@ public class GoDeserializer {
             toMarkers(proto.getMarkers()),
             deserializeExpr(proto.getX()),
             proto.getTok()
+        );
+    }
+    
+    private DeferStmt deserializeDeferStmt(GoProto.DeferStmt proto) {
+        return new DeferStmt(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            deserializeExpr(proto.getCall())
         );
     }
     

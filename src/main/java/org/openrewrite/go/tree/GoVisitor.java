@@ -126,6 +126,14 @@ public class GoVisitor<P> extends TreeVisitor<Tree, P> {
         return e;
     }
     
+    public Tree visitDeferStmt(DeferStmt deferStmt, P p) {
+        DeferStmt d = deferStmt;
+        if (d.getCall() != null) {
+            d = d.withCall((Expr) visit(d.getCall(), p));
+        }
+        return d;
+    }
+    
     public Tree visitAssignStmt(AssignStmt assignStmt, P p) {
         AssignStmt a = assignStmt;
         a = a.withLhs(ListUtils.map(a.getLhs(), e -> (Expr) visit(e, p)));
