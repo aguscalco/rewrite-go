@@ -150,10 +150,11 @@ The parse→print round trip is byte-exact for package clauses, imports (grouped
 - [ ] Remove `errors.Wrap` (pkg/errors) → `fmt.Errorf`
 
 #### Context Propagation
-- [ ] Add `context.Context` as first parameter
-- [ ] Propagate context through call chains
-- [ ] Replace `context.TODO()` with proper context
-- [ ] Timeout and cancellation patterns
+- [x] Add `context.Context` as first parameter
+- [x] Propagate context through call chains
+- [x] Replace `context.TODO()` with proper context
+- [x] Timeout and cancellation patterns
+- [x] Context with values using type-safe keys
 
 #### Testing Improvements
 - [ ] Table-driven test generation
@@ -272,8 +273,8 @@ All of the above operate on an LST you construct or deserialize yourself — see
 
 ### Phase 3: Error Handling & Context (Q2 2026)
 - [ ] `errors.Is` and `errors.As` patterns
-- [ ] Context propagation
-- [ ] Timeout and cancellation
+- [x] Context propagation
+- [x] Timeout and cancellation
 - [ ] pkg/errors migration
 
 ### Phase 4: Framework Support (Q3 2026)
