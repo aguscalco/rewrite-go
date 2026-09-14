@@ -49,9 +49,9 @@ v1.0 — created 2026-09-14
 
 | # | Task | Owner | Status | Depends On | Acceptance Criteria |
 |---|------|-------|--------|------------|---------------------|
-| 1.1 | `ParameterizedQueries` | agent | pending | Phase 0 | Detect & convert string concatenation / `fmt.Sprintf` in SQL queries to parameterized queries |
-| 1.2 | `InputValidation` | agent | pending | 1.1 | Add standard boundary/nil checks on exported entry points |
-| 1.3 | `SecureRandom` | agent | pending | 1.2 | Migrate `math/rand` → `crypto/rand` for security contexts |
+| 1.1 | `ParameterizedQueries` | agent | done | Phase 0 | Detect & convert string concatenation / `fmt.Sprintf` in SQL queries to parameterized queries |
+| 1.2 | `InputValidation` | agent | active | 1.1 | Add standard boundary/nil checks on exported entry points |
+| 1.3 | `SecureRandom` | agent | done | 1.2 | Migrate `math/rand` → `crypto/rand` for security contexts |
 | 1.4 | `TLSConfig` | agent | pending | 1.3 | Enforce modern TLS minimum version and cipher suites |
 | 1.5 | `PathTraversal` | agent | pending | 1.4 | Detect & sanitize unvalidated path traversal constructs |
 | 1.6 | `SQLInjection` | agent | pending | 1.5 | Deep detection and remediation for raw SQL string formats |
