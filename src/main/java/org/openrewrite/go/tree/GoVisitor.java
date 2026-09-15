@@ -156,6 +156,15 @@ public class GoVisitor<P> extends TreeVisitor<Tree, P> {
         return e;
     }
     
+    public Tree visitDeclStmt(DeclStmt declStmt, P p) {
+        DeclStmt d = declStmt;
+        d = (DeclStmt) visitGo(d, p);
+        if (d.getDecl() != null) {
+            d = d.withDecl((Decl) visit(d.getDecl(), p));
+        }
+        return d;
+    }
+
     public Tree visitDeferStmt(DeferStmt deferStmt, P p) {
         DeferStmt d = deferStmt;
         if (d.getCall() != null) {
@@ -243,6 +252,18 @@ public class GoVisitor<P> extends TreeVisitor<Tree, P> {
         return c;
     }
     
+    public Tree visitIndexExpr(IndexExpr indexExpr, P p) {
+        IndexExpr i = indexExpr;
+        i = (IndexExpr) visitGo(i, p);
+        if (i.getX() != null) {
+            i = i.withX((Expr) visit(i.getX(), p));
+        }
+        if (i.getIndex() != null) {
+            i = i.withIndex((Expr) visit(i.getIndex(), p));
+        }
+        return i;
+    }
+
     public Tree visitSelectorExpr(SelectorExpr selectorExpr, P p) {
         SelectorExpr s = selectorExpr;
         s = s.withX((Expr) visit(s.getX(), p));

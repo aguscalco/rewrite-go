@@ -219,6 +219,13 @@ public class GoDeserializer {
             return deserializeIncDecStmt(proto.getIncDecStmt());
         } else if (proto.hasDeferStmt()) {
             return deserializeDeferStmt(proto.getDeferStmt());
+        } else if (proto.hasDeclStmt()) {
+            return new DeclStmt(
+                toUUID(proto.getDeclStmt().getId()),
+                toSpace(proto.getDeclStmt().getPrefix()),
+                toMarkers(proto.getDeclStmt().getMarkers()),
+                proto.getDeclStmt().hasDecl() ? deserializeDecl(proto.getDeclStmt().getDecl()) : null
+            );
         }
         throw unsupported("Stmt", proto.getStmtCase().name());
     }
@@ -319,6 +326,14 @@ public class GoDeserializer {
             return deserializeCallExpr(proto.getCallExpr());
         } else if (proto.hasSelectorExpr()) {
             return deserializeSelectorExpr(proto.getSelectorExpr());
+        } else if (proto.hasIndexExpr()) {
+            return new IndexExpr(
+                toUUID(proto.getIndexExpr().getId()),
+                toSpace(proto.getIndexExpr().getPrefix()),
+                toMarkers(proto.getIndexExpr().getMarkers()),
+                deserializeExpr(proto.getIndexExpr().getX()),
+                deserializeExpr(proto.getIndexExpr().getIndex())
+            );
         } else if (proto.hasBinaryExpr()) {
             return deserializeBinaryExpr(proto.getBinaryExpr());
         } else if (proto.hasUnaryExpr()) {

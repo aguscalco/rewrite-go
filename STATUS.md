@@ -43,8 +43,12 @@
 | 28 | BenchmarkConversion | Testing | - | To be committed |
 | 29 | ExampleTestGeneration | Testing | - | To be committed |
 | 30 | MockGeneration | Testing | - | To be committed |
+| 31 | PreallocateSlices | Performance | - | To be committed |
+| 32 | PreallocateMaps | Performance | - | To be committed |
+| 33 | AvoidSliceAppend | Performance | - | To be committed |
+| 34 | UseStringBuilder | Performance | - | To be committed |
 
-**Tests:** 134 passing, 0 failing  
+**Tests:** 138 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
@@ -60,13 +64,9 @@
 
 #### Phase 4: Testing (0 recipes)
 
-#### Phase 5: Performance (7 recipes)
-- [ ] PreallocateSlices - `var s []T` → `s := make([]T, 0, capacity)`
-- [ ] UseStringBuilder - String concatenation → `strings.Builder`
-- [ ] PreallocateMaps - `make(map[K]V)` → `make(map[K]V, capacity)`
+#### Phase 5: Performance (3 recipes)
 - [ ] UseSyncPool - Frequent allocations → `sync.Pool`
 - [ ] OptimizeStringConversion - `[]byte(string)` optimizations
-- [ ] AvoidSliceAppend - Preallocate instead of append in loops
 - [ ] UseBytesBuffer - `[]byte` operations → `bytes.Buffer`
 
 #### Phase 7: Code Quality (7 recipes)

@@ -292,6 +292,8 @@ func (p *Printer) printExpr(expr *proto.Expr) {
 		p.printBasicLit(e.BasicLit)
 	case *proto.Expr_CallExpr:
 		p.printCallExpr(e.CallExpr)
+	case *proto.Expr_IndexExpr:
+		p.printIndexExpr(e.IndexExpr)
 	case *proto.Expr_SelectorExpr:
 		p.printSelectorExpr(e.SelectorExpr)
 	case *proto.Expr_BinaryExpr:
@@ -473,6 +475,14 @@ func (p *Printer) printSelectorExpr(se *proto.SelectorExpr) {
 	p.printExpr(se.X)
 	p.write(".")
 	p.printIdent(se.Sel)
+}
+
+func (p *Printer) printIndexExpr(ie *proto.IndexExpr) {
+	p.printSpace(ie.Prefix)
+	p.printExpr(ie.X)
+	p.write("[")
+	p.printExpr(ie.Index)
+	p.write("]")
 }
 
 func (p *Printer) printBinaryExpr(be *proto.BinaryExpr) {

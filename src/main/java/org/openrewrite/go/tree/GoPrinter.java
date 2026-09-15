@@ -328,6 +328,14 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                     return incDecStmt;
                 }
                 
+                public Tree visitDeclStmt(DeclStmt declStmt, PrintOutputCapture<P> p) {
+                    printSpace(declStmt.getPrefix(), p);
+                    if (declStmt.getDecl() != null) {
+                        visit(declStmt.getDecl(), p);
+                    }
+                    return declStmt;
+                }
+
                 @Override
                 public Tree visitDeferStmt(DeferStmt deferStmt, PrintOutputCapture<P> p) {
                     printSpace(deferStmt.getPrefix(), p);
@@ -359,6 +367,20 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                     return callExpr;
                 }
                 
+                @Override
+                public Tree visitIndexExpr(IndexExpr indexExpr, PrintOutputCapture<P> p) {
+                    printSpace(indexExpr.getPrefix(), p);
+                    if (indexExpr.getX() != null) {
+                        visit(indexExpr.getX(), p);
+                    }
+                    p.out.append("[");
+                    if (indexExpr.getIndex() != null) {
+                        visit(indexExpr.getIndex(), p);
+                    }
+                    p.out.append("]");
+                    return indexExpr;
+                }
+
                 @Override
                 public Tree visitSelectorExpr(SelectorExpr selectorExpr, PrintOutputCapture<P> p) {
                     printSpace(selectorExpr.getPrefix(), p);
