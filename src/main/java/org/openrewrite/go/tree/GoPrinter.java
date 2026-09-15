@@ -63,6 +63,19 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                 }
                 
                 @Override
+                public Tree visitFuncLit(FuncLit funcLit, PrintOutputCapture<P> p) {
+                    printSpace(funcLit.getPrefix(), p);
+                    p.out.append("func");
+                    if (funcLit.getType() != null) {
+                        visit(funcLit.getType(), p);
+                    }
+                    if (funcLit.getBody() != null) {
+                        visit(funcLit.getBody(), p);
+                    }
+                    return funcLit;
+                }
+
+                @Override
                 public Tree visitIdent(Ident ident, PrintOutputCapture<P> p) {
                     printSpace(ident.getPrefix(), p);
                     p.out.append(ident.getName());

@@ -345,6 +345,8 @@ public class GoDeserializer {
             return deserializePointerTypeExpr(proto.getPointerTypeExpr());
         } else if (proto.hasCompositeLit()) {
             return deserializeCompositeLit(proto.getCompositeLit());
+        } else if (proto.hasFuncLit()) {
+            return deserializeFuncLit(proto.getFuncLit());
         } else if (proto.hasKeyValueExpr()) {
             return deserializeKeyValueExpr(proto.getKeyValueExpr());
         }
@@ -359,6 +361,16 @@ public class GoDeserializer {
             proto.hasType() ? deserializeExpr(proto.getType()) : null,
             deserializeExprs(proto.getEltsList()),
             proto.hasResolvedType() ? deserializeGoType(proto.getResolvedType()) : null
+        );
+    }
+
+    private FuncLit deserializeFuncLit(GoProto.FuncLit proto) {
+        return new FuncLit(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            proto.hasType() ? deserializeFuncType(proto.getType()) : null,
+            proto.hasBody() ? deserializeBlockStmt(proto.getBody()) : null
         );
     }
 

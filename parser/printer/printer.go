@@ -302,6 +302,8 @@ func (p *Printer) printExpr(expr *proto.Expr) {
 		p.printParenExpr(e.ParenExpr)
 	case *proto.Expr_CompositeLit:
 		p.printCompositeLit(e.CompositeLit)
+	case *proto.Expr_FuncLit:
+		p.printFuncLit(e.FuncLit)
 	case *proto.Expr_IndexExpr:
 		p.printIndexExpr(e.IndexExpr)
 	case *proto.Expr_StarExpr:
@@ -494,19 +496,30 @@ func (p *Printer) printParenExpr(pe *proto.ParenExpr) {
 	p.write(")")
 }
 
-func (p *Printer) printCompositeLit(cl *proto.CompositeLit) {
-	p.printSpace(cl.Prefix)
-	if cl.Type != nil {
-		p.printExpr(cl.Type)
+func (p *Printer) printCompositeLit(c *proto.CompositeLit) {
+	p.printSpace(c.Prefix)
+	if c.Type != nil {
+		p.printExpr(c.Type)
 	}
 	p.write("{")
-	for i, elt := range cl.Elts {
+	for i, elt := range c.Elts {
 		if i > 0 {
 			p.write(",")
 		}
 		p.printExpr(elt)
 	}
 	p.write("}")
+}
+
+func (p *Printer) printFuncLit(f *proto.FuncLit) {
+	p.printSpace(f.Prefix)
+	p.write("func")
+	if f.Type != nil {
+		p.printFuncType(f.Type)
+	}
+	if f.Body != nil {
+		p.printBlockStmt(f.Body)
+	}
 }
 
 func (p *Printer) printIndexExpr(ie *proto.IndexExpr) {

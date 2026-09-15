@@ -54,6 +54,18 @@ public class GoVisitor<P> extends TreeVisitor<Tree, P> {
         return i;
     }
     
+    public Tree visitFuncLit(FuncLit funcLit, P p) {
+        FuncLit f = funcLit;
+        f = (FuncLit) visitGo(f, p);
+        if (f.getType() != null) {
+            f = f.withType((FuncType) visit(f.getType(), p));
+        }
+        if (f.getBody() != null) {
+            f = f.withBody((BlockStmt) visit(f.getBody(), p));
+        }
+        return f;
+    }
+
     public Tree visitIdent(Ident ident, P p) {
         return visitGo(ident, p);
     }
