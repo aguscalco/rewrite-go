@@ -32,8 +32,9 @@
 | 17 | ContextWithValue | Context Propagation | - | To be committed |
 | 18 | ParameterizedQueries | Security | - | `15` |
 | 19 | SecureRandom | Security | - | To be committed |
+| 20 | TLSConfig | Security | - | To be committed |
 
-**Tests:** 121 passing, 0 failing  
+**Tests:** 123 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
@@ -45,9 +46,8 @@
 
 #### Phase 3: Context Propagation (0 remaining)
 
-#### Phase 6: Security (4 recipes)
+#### Phase 6: Security (3 recipes)
 - [ ] InputValidation - Add input validation patterns
-- [ ] TLSConfig - Modern TLS settings
 - [ ] PathTraversal - Prevent path traversal attacks
 - [ ] SQLInjection - Detect and fix SQL injection patterns
 
