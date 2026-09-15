@@ -50,38 +50,24 @@
 | 35 | UseSyncPool | Performance | - | To be committed |
 | 36 | OptimizeStringConversion | Performance | - | To be committed |
 | 37 | UseBytesBuffer | Performance | - | To be committed |
+| 38 | ReceiverNaming | Code Quality | - | To be committed |
+| 39 | PackageComment | Code Quality | - | To be committed |
+| 40 | ExportedComment | Code Quality | - | To be committed |
+| 41 | SimplifyReturn | Code Quality | - | To be committed |
+| 42 | UseNamedReturns | Code Quality | - | To be committed |
+| 43 | ErrorVariableNaming | Code Quality | - | To be committed |
+| 44 | ConstantNaming | Code Quality | - | To be committed |
 
-**Tests:** 141 passing, 0 failing  
+**Tests:** 148 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
 
-| Recipe | Category | Status | Notes |
-|--------|----------|--------|-------|
-
-### 📋 Pending Recipes
-
-#### Phase 3: Context Propagation (0 remaining)
-
-#### Phase 6: Security (0 recipes)
-
-#### Phase 4: Testing (0 recipes)
-
-#### Phase 5: Performance (0 recipes)
-
-#### Phase 7: Code Quality (7 recipes)
-- [ ] ReceiverNaming - Consistent receiver names (single letter)
-- [ ] ErrorVariableNaming - `errXxx` → `ErrXxx` for exported errors
-- [ ] PackageComment - Add package-level documentation
-- [ ] ExportedComment - Add comments to exported types/functions
-- [ ] RemoveUnusedImports - Remove unused imports
-- [ ] SimplifyReturn - Simplify return statements
-- [ ] UseNamedReturns - Anonymous → named returns (or vice versa)
-- [ ] ConstantNaming - `const xxx` → `const Xxx` for exported
+### ⏳ Pending (2 recipes)
 
 #### Phase 1: Advanced Go Features (2 remaining)
-- [ ] GenericsRefactor - Add type parameters to functions/types (Go 1.18+)
-- [ ] FuzzTestConversion - Convert unit tests to fuzz tests (Go 1.18+)
+- [ ] GenericsRefactor - Migrate `interface{}` to type parameters where applicable
+- [ ] FuzzTestConversion - Convert table-driven tests to `testing.F` where applicable
 
 #### Phase 8: Framework Migrations (separate modules)
 - [ ] **rewrite-gin:** GinV1ToV2, GinMiddlewareUpdate, GinContextMethods, GinBindingValidation

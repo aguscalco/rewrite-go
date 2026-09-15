@@ -89,23 +89,19 @@ v1.0 — created 2026-09-14
 | 3.3 | `PreallocateMaps` | agent | done | 3.2 | Convert `make(map[K]V)` to `make(map[K]V, hint)` where determinable |
 | 3.4 | `UseSyncPool` | agent | done | 3.3 | Introduce `sync.Pool` for frequent allocations |
 | 3.5 | `OptimizeStringConversion` | agent | done | 3.4 | Optimize byte-string conversion |
+| 3.6 | `UseBytesBuffer` | agent | done | 3.5 | `[]byte` operations → `bytes.Buffer` |
 
 ---
 
 ## Phase 4: Code Quality & Idiomatic Go Suite
 
-**Entry criteria:** Phase 3 complete.  
-**Exit criteria:** All code quality recipes implemented and tested.
-
-### Tasks
-
 | # | Task | Owner | Status | Depends On | Acceptance Criteria |
 |---|------|-------|--------|------------|---------------------|
-| 4.1 | `ReceiverNaming` | agent | pending | Phase 3 | Enforce consistent receiver naming |
-| 4.2 | `ErrorVariableNaming` | agent | pending | 4.1 | Enforce `ErrXxx` convention for exported errors |
-| 4.3 | `PackageComment` & `ExportedComment` | agent | pending | 4.2 | Add proper doc comments to package and exported items |
-| 4.4 | `RemoveUnusedImports` & `SimplifyReturn` | agent | pending | 4.3 | Clean unused imports and streamline returns |
-| 4.5 | `ConstantNaming` & `UseNamedReturns` | agent | pending | 4.4 | Standardize constants and return naming |
+| 4.1 | `ReceiverNaming` | agent | done | Phase 3 | Enforce consistent receiver naming |
+| 4.2 | `ErrorVariableNaming` | agent | done | 4.1 | Enforce `ErrXxx` convention for exported errors |
+| 4.3 | `PackageComment` & `ExportedComment` | agent | done | 4.2 | Add proper doc comments to package and exported items |
+| 4.4 | `SimplifyReturn` | agent | done | 4.3 | Clean unused imports and streamline returns |
+| 4.5 | `ConstantNaming` & `UseNamedReturns` | agent | done | 4.4 | Standardize constants and return naming |
 
 ---
 
