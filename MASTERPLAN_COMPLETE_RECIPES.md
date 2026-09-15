@@ -114,5 +114,5 @@ v1.0 — created 2026-09-14
 
 | # | Task | Owner | Status | Depends On | Acceptance Criteria |
 |---|------|-------|--------|------------|---------------------|
-| 5.1 | `GenericsRefactor` & `FuzzTestConversion` | agent | pending | Phase 4 | Type parameter refactoring and fuzz testing |
-| 5.2 | Framework Modules (Gin, Echo, stdlib HTTP) | agent | pending | 5.1 | Framework migration recipes delivered |
+| 5.1 | `GenericsRefactor` & `FuzzTestConversion` | agent | done | Phase 4 | Type parameter refactoring and fuzz testing |
+| 5.2 | Framework Modules (Gin, Echo, stdlib HTTP) | agent | done | 5.1 | Framework migration recipes delivered |

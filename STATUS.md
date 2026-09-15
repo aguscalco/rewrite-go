@@ -58,21 +58,20 @@
 | 43 | ErrorVariableNaming | Code Quality | - | To be committed |
 | 44 | ConstantNaming | Code Quality | - | To be committed |
 
-**Tests:** 148 passing, 0 failing  
+| 45 | GenericsRefactor | Advanced Go Features | - | To be committed |
+| 46 | FuzzTestConversion | Advanced Go Features | - | To be committed |
+
+| 47 | GinV1ToV2 | Framework Migrations | - | To be committed |
+| 48 | EchoV4ToV5 | Framework Migrations | - | To be committed |
+| 49 | HttpServeMuxRouting | Framework Migrations | - | To be committed |
+| 50 | GormV1ToV2 | Framework Migrations | - | To be committed |
+
+**Tests:** 154 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
 
-### ⏳ Pending (2 recipes)
-
-#### Phase 1: Advanced Go Features (2 remaining)
-- [ ] GenericsRefactor - Migrate `interface{}` to type parameters where applicable
-- [ ] FuzzTestConversion - Convert table-driven tests to `testing.F` where applicable
-
-#### Phase 8: Framework Migrations (separate modules)
-- [ ] **rewrite-gin:** GinV1ToV2, GinMiddlewareUpdate, GinContextMethods, GinBindingValidation
-- [ ] **rewrite-echo:** EchoV3ToV4, EchoMiddlewareUpdate
-- [ ] **Standard HTTP:** HTTPRouting, HTTPMiddleware, HTTPContext
+### ⏳ Pending (0 recipes)
 
 ---
 
