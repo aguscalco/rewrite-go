@@ -39,8 +39,12 @@
 | 24 | AddTestHelper | Testing | - | To be committed |
 | 25 | UseTSetenv | Testing | 1.17+ | To be committed |
 | 26 | TestSubtests | Testing | - | To be committed |
+| 27 | TableDrivenTests | Testing | - | To be committed |
+| 28 | BenchmarkConversion | Testing | - | To be committed |
+| 29 | ExampleTestGeneration | Testing | - | To be committed |
+| 30 | MockGeneration | Testing | - | To be committed |
 
-**Tests:** 130 passing, 0 failing  
+**Tests:** 134 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
@@ -54,11 +58,7 @@
 
 #### Phase 6: Security (0 recipes)
 
-#### Phase 4: Testing (4 recipes)
-- [ ] TableDrivenTests - Convert sequential tests to table-driven
-- [ ] BenchmarkConversion - Convert tests to benchmarks
-- [ ] ExampleTestGeneration - Generate example tests from functions
-- [ ] MockGeneration - Generate mocks from interfaces
+#### Phase 4: Testing (0 recipes)
 
 #### Phase 5: Performance (7 recipes)
 - [ ] PreallocateSlices - `var s []T` → `s := make([]T, 0, capacity)`

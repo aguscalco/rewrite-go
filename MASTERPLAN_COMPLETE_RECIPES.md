@@ -16,8 +16,8 @@ v1.0 — created 2026-09-14
 |-------|------|--------|-------|
 | 0 | Context Propagation Suite | ✅ Done | ContextCancellation and ContextWithValue complete |
 | 1 | Security Recipes Suite | ✅ Done | ParameterizedQueries, InputValidation, SecureRandom, TLSConfig, PathTraversal, SQLInjection complete |
-| 2 | Testing Improvements Suite | 🔄 Active | Starting TableDrivenTests |
-| 3 | Performance Optimizations Suite | ⏳ Pending | Blocked on Phase 2 |
+| 2 | Testing Improvements Suite | ✅ Done | Testing recipes complete |
+| 3 | Performance Optimizations Suite | 🔄 Active | Starting PreallocateSlices |
 | 4 | Code Quality & Idiomatic Go Suite | ⏳ Pending | Blocked on Phase 3 |
 | 5 | Advanced Features & Framework Migrations | ⏳ Pending | Blocked on Phase 4 |
 
@@ -67,11 +67,11 @@ v1.0 — created 2026-09-14
 
 | # | Task | Owner | Status | Depends On | Acceptance Criteria |
 |---|------|-------|--------|------------|---------------------|
-| 2.1 | `TableDrivenTests` | agent | pending | Phase 1 | Convert sequential test calls to table-driven tests |
+| 2.1 | `TableDrivenTests` | agent | done | Phase 1 | Convert sequential test calls to table-driven tests |
 | 2.2 | `AddTestHelper` | agent | done | 2.1 | Add `t.Helper()` to test helper functions |
 | 2.3 | `UseTSetenv` | agent | done | 2.2 | Migrate `os.Setenv` to `t.Setenv` (Go 1.17+) |
 | 2.4 | `TestSubtests` | agent | done | 2.3 | Convert test loops to `t.Run` |
-| 2.5 | `BenchmarkConversion` & `ExampleTestGeneration` | agent | pending | 2.4 | Generate benchmarks and example tests |
+| 2.5 | `BenchmarkConversion` & `ExampleTestGeneration` | agent | done | 2.4 | Generate benchmarks and example tests |
 
 ---
 
