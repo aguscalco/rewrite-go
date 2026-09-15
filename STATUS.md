@@ -33,8 +33,11 @@
 | 18 | ParameterizedQueries | Security | - | `15` |
 | 19 | SecureRandom | Security | - | To be committed |
 | 20 | TLSConfig | Security | - | To be committed |
+| 21 | InputValidation | Security | - | To be committed |
+| 22 | PathTraversal | Security | - | To be committed |
+| 23 | SQLInjection | Security | - | To be committed |
 
-**Tests:** 123 passing, 0 failing  
+**Tests:** 126 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
@@ -46,10 +49,7 @@
 
 #### Phase 3: Context Propagation (0 remaining)
 
-#### Phase 6: Security (3 recipes)
-- [ ] InputValidation - Add input validation patterns
-- [ ] PathTraversal - Prevent path traversal attacks
-- [ ] SQLInjection - Detect and fix SQL injection patterns
+#### Phase 6: Security (0 recipes)
 
 #### Phase 4: Testing (7 recipes)
 - [ ] TableDrivenTests - Convert sequential tests to table-driven

@@ -169,10 +169,11 @@ The parse→print round trip is byte-exact for package clauses, imports (grouped
 - [ ] Map preallocation
 
 #### Security Best Practices
-- [ ] SQL injection prevention (parameterized queries)
-- [ ] Input validation patterns
-- [ ] Secure random number generation
-- [ ] TLS configuration updates
+- [x] Parameterized SQL queries
+- [x] Input validation patterns
+- [x] Secure random number generation
+- [x] TLS configuration updates
+- [x] Path traversal prevention
 
 ### 🎯 Framework Migrations
 

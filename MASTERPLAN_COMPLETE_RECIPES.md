@@ -10,19 +10,19 @@ v1.0 — created 2026-09-14
 
 **Active plan version:** v1.0  
 **Last updated:** 2026-09-14  
-**Active phase:** Phase 1 (Security Recipes Suite)  
+**Active phase:** Phase 2 (Testing Improvements Suite)  
 
 | Phase | Name | Status | Notes |
 |-------|------|--------|-------|
 | 0 | Context Propagation Suite | ✅ Done | ContextCancellation and ContextWithValue complete |
-| 1 | Security Recipes Suite | 🔄 Active | Starting ParameterizedQueries |
-| 2 | Testing Improvements Suite | ⏳ Pending | Blocked on Phase 1 |
+| 1 | Security Recipes Suite | ✅ Done | ParameterizedQueries, InputValidation, SecureRandom, TLSConfig, PathTraversal, SQLInjection complete |
+| 2 | Testing Improvements Suite | 🔄 Active | Starting TableDrivenTests |
 | 3 | Performance Optimizations Suite | ⏳ Pending | Blocked on Phase 2 |
 | 4 | Code Quality & Idiomatic Go Suite | ⏳ Pending | Blocked on Phase 3 |
 | 5 | Advanced Features & Framework Migrations | ⏳ Pending | Blocked on Phase 4 |
 
 **Current blockers:** None  
-**Next agent action:** Commit Phase 0 changes, then transition to Phase 1 (ParameterizedQueries)
+**Next agent action:** Transition to Phase 2 (TableDrivenTests)
 
 ---
 
@@ -50,11 +50,11 @@ v1.0 — created 2026-09-14
 | # | Task | Owner | Status | Depends On | Acceptance Criteria |
 |---|------|-------|--------|------------|---------------------|
 | 1.1 | `ParameterizedQueries` | agent | done | Phase 0 | Detect & convert string concatenation / `fmt.Sprintf` in SQL queries to parameterized queries |
-| 1.2 | `InputValidation` | agent | active | 1.1 | Add standard boundary/nil checks on exported entry points |
+| 1.2 | `InputValidation` | agent | done | 1.1 | Add standard boundary/nil checks on exported entry points |
 | 1.3 | `SecureRandom` | agent | done | 1.2 | Migrate `math/rand` → `crypto/rand` for security contexts |
 | 1.4 | `TLSConfig` | agent | done | 1.3 | Enforce modern TLS minimum version and cipher suites |
-| 1.5 | `PathTraversal` | agent | pending | 1.4 | Detect & sanitize unvalidated path traversal constructs |
-| 1.6 | `SQLInjection` | agent | pending | 1.5 | Deep detection and remediation for raw SQL string formats |
+| 1.5 | `PathTraversal` | agent | done | 1.4 | Detect & sanitize unvalidated path traversal constructs |
+| 1.6 | `SQLInjection` | agent | done | 1.5 | Deep detection and remediation for raw SQL string formats |
 
 ---
 
