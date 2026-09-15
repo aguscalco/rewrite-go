@@ -47,8 +47,11 @@
 | 32 | PreallocateMaps | Performance | - | To be committed |
 | 33 | AvoidSliceAppend | Performance | - | To be committed |
 | 34 | UseStringBuilder | Performance | - | To be committed |
+| 35 | UseSyncPool | Performance | - | To be committed |
+| 36 | OptimizeStringConversion | Performance | - | To be committed |
+| 37 | UseBytesBuffer | Performance | - | To be committed |
 
-**Tests:** 138 passing, 0 failing  
+**Tests:** 141 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
@@ -64,10 +67,7 @@
 
 #### Phase 4: Testing (0 recipes)
 
-#### Phase 5: Performance (3 recipes)
-- [ ] UseSyncPool - Frequent allocations → `sync.Pool`
-- [ ] OptimizeStringConversion - `[]byte(string)` optimizations
-- [ ] UseBytesBuffer - `[]byte` operations → `bytes.Buffer`
+#### Phase 5: Performance (0 recipes)
 
 #### Phase 7: Code Quality (7 recipes)
 - [ ] ReceiverNaming - Consistent receiver names (single letter)

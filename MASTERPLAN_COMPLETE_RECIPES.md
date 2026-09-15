@@ -87,8 +87,8 @@ v1.0 — created 2026-09-14
 | 3.1 | `PreallocateSlices` & `AvoidSliceAppend` | agent | done | Phase 2 | Convert dynamic append loops to preallocated slices / direct index assignments |
 | 3.2 | `UseStringBuilder` | agent | done | 3.1 | Flag string concatenation chains for `strings.Builder` |
 | 3.3 | `PreallocateMaps` | agent | done | 3.2 | Convert `make(map[K]V)` to `make(map[K]V, hint)` where determinable |
-| 3.4 | `UseSyncPool` | agent | pending | 3.3 | Introduce `sync.Pool` for frequent allocations |
-| 3.5 | `OptimizeStringConversion` | agent | pending | 3.4 | Optimize byte-string conversion |
+| 3.4 | `UseSyncPool` | agent | done | 3.3 | Introduce `sync.Pool` for frequent allocations |
+| 3.5 | `OptimizeStringConversion` | agent | done | 3.4 | Optimize byte-string conversion |
 
 ---
 
