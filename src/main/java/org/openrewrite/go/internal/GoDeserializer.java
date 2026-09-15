@@ -343,8 +343,33 @@ public class GoDeserializer {
             return deserializeSliceTypeExpr(proto.getSliceTypeExpr());
         } else if (proto.hasPointerTypeExpr()) {
             return deserializePointerTypeExpr(proto.getPointerTypeExpr());
+        } else if (proto.hasCompositeLit()) {
+            return deserializeCompositeLit(proto.getCompositeLit());
+        } else if (proto.hasKeyValueExpr()) {
+            return deserializeKeyValueExpr(proto.getKeyValueExpr());
         }
         throw unsupported("Expr", proto.getExprCase().name());
+    }
+
+    private CompositeLit deserializeCompositeLit(GoProto.CompositeLit proto) {
+        return new CompositeLit(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            proto.hasType() ? deserializeExpr(proto.getType()) : null,
+            deserializeExprs(proto.getEltsList()),
+            proto.hasResolvedType() ? deserializeGoType(proto.getResolvedType()) : null
+        );
+    }
+
+    private KeyValueExpr deserializeKeyValueExpr(GoProto.KeyValueExpr proto) {
+        return new KeyValueExpr(
+            toUUID(proto.getId()),
+            toSpace(proto.getPrefix()),
+            toMarkers(proto.getMarkers()),
+            deserializeExpr(proto.getKey()),
+            deserializeExpr(proto.getValue())
+        );
     }
 
     private SliceTypeExpr deserializeSliceTypeExpr(GoProto.SliceTypeExpr proto) {

@@ -78,6 +78,24 @@ public class GoVisitor<P> extends TreeVisitor<Tree, P> {
         return f;
     }
     
+    public Tree visitCompositeLit(CompositeLit compositeLit, P p) {
+        CompositeLit c = compositeLit;
+        c = (CompositeLit) visitGo(c, p);
+        if (c.getType() != null) {
+            c = c.withType((Expr) visit(c.getType(), p));
+        }
+        c = c.withElts(org.openrewrite.internal.ListUtils.map(c.getElts(), elt -> (Expr) visit(elt, p)));
+        return c;
+    }
+
+    public Tree visitKeyValueExpr(KeyValueExpr keyValueExpr, P p) {
+        KeyValueExpr k = keyValueExpr;
+        k = (KeyValueExpr) visitGo(k, p);
+        k = k.withKey((Expr) visit(k.getKey(), p));
+        k = k.withValue((Expr) visit(k.getValue(), p));
+        return k;
+    }
+    
     public Tree visitGenDecl(GenDecl genDecl, P p) {
         GenDecl g = genDecl;
         g = g.withSpecs(ListUtils.map(g.getSpecs(), spec -> (Spec) visit(spec, p)));

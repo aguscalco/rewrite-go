@@ -96,6 +96,32 @@ public class GoPrinter<P> extends TreeVisitor<Tree, PrintOutputCapture<P>> {
                 }
                 
                 @Override
+                public Tree visitCompositeLit(CompositeLit compositeLit, PrintOutputCapture<P> p) {
+                    printSpace(compositeLit.getPrefix(), p);
+                    if (compositeLit.getType() != null) {
+                        visit(compositeLit.getType(), p);
+                    }
+                    p.out.append("{");
+                    for (int i = 0; i < compositeLit.getElts().size(); i++) {
+                        if (i > 0) {
+                            p.out.append(",");
+                        }
+                        visit(compositeLit.getElts().get(i), p);
+                    }
+                    p.out.append("}");
+                    return compositeLit;
+                }
+                
+                @Override
+                public Tree visitKeyValueExpr(KeyValueExpr keyValueExpr, PrintOutputCapture<P> p) {
+                    printSpace(keyValueExpr.getPrefix(), p);
+                    visit(keyValueExpr.getKey(), p);
+                    p.out.append(": ");
+                    visit(keyValueExpr.getValue(), p);
+                    return keyValueExpr;
+                }
+                
+                @Override
                 public Tree visitGenDecl(GenDecl genDecl, PrintOutputCapture<P> p) {
                     printSpace(genDecl.getPrefix(), p);
                     p.out.append(genDecl.getTok());
