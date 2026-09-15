@@ -38,8 +38,9 @@
 | 23 | SQLInjection | Security | - | To be committed |
 | 24 | AddTestHelper | Testing | - | To be committed |
 | 25 | UseTSetenv | Testing | 1.17+ | To be committed |
+| 26 | TestSubtests | Testing | - | To be committed |
 
-**Tests:** 129 passing, 0 failing  
+**Tests:** 130 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
@@ -53,9 +54,8 @@
 
 #### Phase 6: Security (0 recipes)
 
-#### Phase 4: Testing (5 recipes)
+#### Phase 4: Testing (4 recipes)
 - [ ] TableDrivenTests - Convert sequential tests to table-driven
-- [ ] TestSubtests - Convert loops to `t.Run` subtests
 - [ ] BenchmarkConversion - Convert tests to benchmarks
 - [ ] ExampleTestGeneration - Generate example tests from functions
 - [ ] MockGeneration - Generate mocks from interfaces

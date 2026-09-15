@@ -70,7 +70,7 @@ v1.0 — created 2026-09-14
 | 2.1 | `TableDrivenTests` | agent | pending | Phase 1 | Convert sequential test calls to table-driven tests |
 | 2.2 | `AddTestHelper` | agent | done | 2.1 | Add `t.Helper()` to test helper functions |
 | 2.3 | `UseTSetenv` | agent | done | 2.2 | Migrate `os.Setenv` to `t.Setenv` (Go 1.17+) |
-| 2.4 | `TestSubtests` | agent | pending | 2.3 | Convert test loops to `t.Run` |
+| 2.4 | `TestSubtests` | agent | done | 2.3 | Convert test loops to `t.Run` |
 | 2.5 | `BenchmarkConversion` & `ExampleTestGeneration` | agent | pending | 2.4 | Generate benchmarks and example tests |
 
 ---
