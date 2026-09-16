@@ -127,7 +127,18 @@
 | 109 | IoUtilReadDirToOsReadDir | staticcheck Parity | - | To be committed |
 | 110 | IoUtilNopCloserToIoNopCloser | staticcheck Parity | - | To be committed |
 
-**Tests:** 216 passing, 0 failing  
+| 111 | SecureDirectoryPermissions | gosec Parity | - | To be committed |
+| 112 | SecureFilePermissions | gosec Parity | - | To be committed |
+| 113 | TimeSinceNow | staticcheck Parity | - | To be committed |
+| 114 | MathAbsNeg | staticcheck Parity | - | To be committed |
+| 115 | SortInts | staticcheck Parity | - | To be committed |
+| 116 | SortFloat64s | staticcheck Parity | - | To be committed |
+| 117 | SortStrings | staticcheck Parity | - | To be committed |
+| 118 | MathIsNaNCompare | staticcheck Parity | - | To be committed |
+| 119 | MathPow1 | staticcheck Parity | - | To be committed |
+| 120 | MathPow0 | staticcheck Parity | - | To be committed |
+
+**Tests:** 226 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
