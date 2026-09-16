@@ -204,7 +204,18 @@
 | 179 | TimeUnixNanoToMilli | staticcheck Parity | - | To be committed |
 | 180 | TimeUnixNanoToMicro | staticcheck Parity | - | To be committed |
 
-**Tests:** 288 passing, 0 failing  
+| 181 | SortIntsToSlicesSort | staticcheck Parity | - | To be committed |
+| 182 | SortStringsToSlicesSort | staticcheck Parity | - | To be committed |
+| 183 | SortFloat64sToSlicesSort | staticcheck Parity | - | To be committed |
+| 184 | SortIntsAreSortedToSlicesIsSorted | staticcheck Parity | - | To be committed |
+| 185 | SortStringsAreSortedToSlicesIsSorted | staticcheck Parity | - | To be committed |
+| 186 | SortFloat64sAreSortedToSlicesIsSorted | staticcheck Parity | - | To be committed |
+| 187 | StringsCompareLessThan | staticcheck Parity | - | To be committed |
+| 188 | StringsCompareGreaterThan | staticcheck Parity | - | To be committed |
+| 189 | StringsCompareLessThanEqual | staticcheck Parity | - | To be committed |
+| 190 | StringsCompareGreaterThanEqual | staticcheck Parity | - | To be committed |
+
+**Tests:** 298 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
