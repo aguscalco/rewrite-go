@@ -114,7 +114,10 @@
 | 97 | TimeSleepZero | gocritic Parity | - | To be committed |
 | 98 | UnnecessaryStringCast | gocritic Parity | - | To be committed |
 
-**Tests:** 203 passing, 0 failing  
+| 99 | MathExp2 | staticcheck Parity | - | To be committed |
+| 100 | DoubleNegation | gocritic Parity | - | To be committed |
+
+**Tests:** 205 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
