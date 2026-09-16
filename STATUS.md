@@ -100,8 +100,13 @@
 | 83 | PreferFilepathJoin | gocritic Parity | - | To be committed |
 | 84 | DupArgSimplify | gocritic Parity | - | To be committed |
 | 85 | Underef | gocritic Parity | - | To be committed |
+| 86 | IndexToContains | staticcheck Parity | - | To be committed |
+| 87 | CountToContains | staticcheck Parity | - | To be committed |
+| 88 | SprintfConcatSimplify | gocritic Parity | - | To be committed |
+| 89 | FmtErrorfToErrorsNew | staticcheck Parity | - | To be committed |
+| 90 | ErrorsNewErrorf | staticcheck Parity | - | To be committed |
 
-**Tests:** 190 passing, 0 failing  
+**Tests:** 195 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
