@@ -68,8 +68,10 @@
 | 51 | LoopVarCaptureFix | Modern Go Adoptions | - | To be committed |
 | 52 | UseClearBuiltin | Modern Go Adoptions | - | To be committed |
 | 53 | UseMinMaxBuiltins | Modern Go Adoptions | - | To be committed |
+| 54 | ErrorsJoinMigration | Modern Go Adoptions | - | To be committed |
+| 55 | IterSeqMigration | Modern Go Adoptions | - | To be committed |
 
-**Tests:** 157 passing, 0 failing  
+**Tests:** 159 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
