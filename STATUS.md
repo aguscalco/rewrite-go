@@ -75,8 +75,13 @@
 | 58 | TimerLeakPrevention | Concurrency & Safety | - | To be committed |
 | 59 | AtomicPointerMigration | Concurrency & Safety | - | To be committed |
 | 60 | DeferInLoop | Concurrency & Safety | - | To be committed |
+| 61 | YodaCondition | Code Quality & Linters | - | To be committed |
+| 62 | RemoveRedundantType | Code Quality & Linters | - | To be committed |
+| 63 | SimplifyRange | Code Quality & Linters | - | To be committed |
+| 64 | TimeSinceFix | Code Quality & Linters | - | To be committed |
+| 65 | TimeUntilFix | Code Quality & Linters | - | To be committed |
 
-**Tests:** 164 passing, 0 failing  
+**Tests:** 169 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
