@@ -70,8 +70,13 @@
 | 53 | UseMinMaxBuiltins | Modern Go Adoptions | - | To be committed |
 | 54 | ErrorsJoinMigration | Modern Go Adoptions | - | To be committed |
 | 55 | IterSeqMigration | Modern Go Adoptions | - | To be committed |
+| 56 | DetectContextLeak | Concurrency & Safety | - | To be committed |
+| 57 | MutexByValue | Concurrency & Safety | - | To be committed |
+| 58 | TimerLeakPrevention | Concurrency & Safety | - | To be committed |
+| 59 | AtomicPointerMigration | Concurrency & Safety | - | To be committed |
+| 60 | DeferInLoop | Concurrency & Safety | - | To be committed |
 
-**Tests:** 159 passing, 0 failing  
+**Tests:** 164 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
