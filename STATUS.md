@@ -116,8 +116,18 @@
 
 | 99 | MathExp2 | staticcheck Parity | - | To be committed |
 | 100 | DoubleNegation | gocritic Parity | - | To be committed |
+| 101 | StringsHasPrefixEq | staticcheck Parity | - | To be committed |
+| 102 | RedundantBoolCmp | gocritic Parity | - | To be committed |
+| 103 | BytesHasPrefixEq | staticcheck Parity | - | To be committed |
+| 104 | TimeSubCompare | staticcheck Parity | - | To be committed |
+| 105 | MathFloorPlus05 | staticcheck Parity | - | To be committed |
+| 106 | IoUtilReadAllToIoReadAll | staticcheck Parity | - | To be committed |
+| 107 | IoUtilReadFileToOsReadFile | staticcheck Parity | - | To be committed |
+| 108 | IoUtilWriteFileToOsWriteFile | staticcheck Parity | - | To be committed |
+| 109 | IoUtilReadDirToOsReadDir | staticcheck Parity | - | To be committed |
+| 110 | IoUtilNopCloserToIoNopCloser | staticcheck Parity | - | To be committed |
 
-**Tests:** 205 passing, 0 failing  
+**Tests:** 216 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
