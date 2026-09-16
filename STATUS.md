@@ -160,7 +160,18 @@
 | 139 | BytesCountToContains | staticcheck Parity | - | To be committed |
 | 140 | BytesIndexToContains | staticcheck Parity | - | To be committed |
 
-**Tests:** 246 passing, 0 failing  
+| 141 | MathLog10 | staticcheck Parity | - | To be committed |
+| 142 | MathLog2 | staticcheck Parity | - | To be committed |
+| 143 | IndexToHasPrefix | staticcheck Parity | - | To be committed |
+| 144 | BytesIndexToHasPrefix | staticcheck Parity | - | To be committed |
+| 145 | FmtFprintToPrint | staticcheck Parity | - | To be committed |
+| 146 | MathExpm1 | staticcheck Parity | - | To be committed |
+| 147 | MathLog1p | staticcheck Parity | - | To be committed |
+| 148 | FilepathJoinEmptyString | staticcheck Parity | - | To be committed |
+| 149 | PathJoinEmptyString | staticcheck Parity | - | To be committed |
+| 150 | BytesEqualNil | staticcheck Parity | - | To be committed |
+
+**Tests:** 256 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
