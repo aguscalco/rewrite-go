@@ -182,7 +182,18 @@
 | 159 | SortFloat64sAreSorted | staticcheck Parity | - | To be committed |
 | 160 | MathPow10 | staticcheck Parity | - | To be committed |
 
-**Tests:** 266 passing, 0 failing  
+| 161 | TimeNowSubToSince | staticcheck Parity | - | To be committed |
+| 162 | TimeSubNowToUntil | staticcheck Parity | - | To be committed |
+| 163 | MathFloorAddHalf | staticcheck Parity | - | To be committed |
+| 164 | FmtPrintfNoArgs | staticcheck Parity | - | To be committed |
+| 165 | FmtFprintfNoArgs | staticcheck Parity | - | To be committed |
+| 166 | FmtSprintfNoArgs | staticcheck Parity | - | To be committed |
+| 167 | SortSortIntSlice | staticcheck Parity | - | To be committed |
+| 168 | SortSortStringSlice | staticcheck Parity | - | To be committed |
+| 169 | SortSortFloat64Slice | staticcheck Parity | - | To be committed |
+| 170 | FmtSprintfVToSprint | staticcheck Parity | - | To be committed |
+
+**Tests:** 276 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
