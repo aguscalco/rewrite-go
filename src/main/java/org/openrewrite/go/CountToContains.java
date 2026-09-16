@@ -25,7 +25,7 @@ public class CountToContains extends Recipe {
             public Tree visitBinaryExpr(BinaryExpr binaryExpr, ExecutionContext ctx) {
                 BinaryExpr b = (BinaryExpr) super.visitBinaryExpr(binaryExpr, ctx);
 
-                if ((">".equals(b.getOp()) || ">=".equals(b.getOp()) || "!=".equals(b.getOp()))) {
+                if ((">".equals(b.getOp()) || ">=".equals(b.getOp()) || "!=".equals(b.getOp()) || "==".equals(b.getOp()))) {
                     
                     if (b.getX() instanceof CallExpr && b.getY() instanceof BasicLit) {
                         CallExpr call = (CallExpr) b.getX();
@@ -33,15 +33,24 @@ public class CountToContains extends Recipe {
                         
                         if (isStringsCountCall(call)) {
                             boolean shouldReplace = false;
+                            boolean negate = false;
                             
                             if ((">".equals(b.getOp()) && "0".equals(lit.getValue())) || (">=".equals(b.getOp()) && "1".equals(lit.getValue())) || ("!=".equals(b.getOp()) && "0".equals(lit.getValue()))) {
                                 shouldReplace = true;
+                            } else if ("==".equals(b.getOp()) && "0".equals(lit.getValue())) {
+                                shouldReplace = true;
+                                negate = true;
                             }
                             
                             if (shouldReplace) {
                                 SelectorExpr sel = (SelectorExpr) call.getFun();
                                 Ident containsIdent = sel.getSel().withName("Contains");
-                                return call.withFun(sel.withSel(containsIdent)).withPrefix(b.getPrefix());
+                                CallExpr containsCall = call.withFun(sel.withSel(containsIdent));
+                                
+                                if (negate) {
+                                    return new org.openrewrite.go.tree.UnaryExpr(java.util.UUID.randomUUID(), b.getPrefix(), org.openrewrite.marker.Markers.EMPTY, "!", containsCall.withPrefix(org.openrewrite.go.tree.Space.EMPTY), null);
+                                }
+                                return containsCall.withPrefix(b.getPrefix());
                             }
                         }
                     }
