@@ -95,8 +95,13 @@
 | 78 | GorillaToStdlib | Ecosystem Frameworks | - | To be committed |
 | 79 | GinBindValidation | Ecosystem Frameworks | - | To be committed |
 | 80 | GormAutoMigrateCheck | Ecosystem Frameworks | - | To be committed |
+| 81 | EmptyStringTest | gocritic Parity | - | To be committed |
+| 82 | BoolExprSimplify | gocritic Parity | - | To be committed |
+| 83 | PreferFilepathJoin | gocritic Parity | - | To be committed |
+| 84 | DupArgSimplify | gocritic Parity | - | To be committed |
+| 85 | Underef | gocritic Parity | - | To be committed |
 
-**Tests:** 185 passing, 0 failing  
+**Tests:** 190 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
