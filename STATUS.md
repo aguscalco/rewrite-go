@@ -138,7 +138,18 @@
 | 119 | MathPow1 | staticcheck Parity | - | To be committed |
 | 120 | MathPow0 | staticcheck Parity | - | To be committed |
 
-**Tests:** 226 passing, 0 failing  
+| 121 | StringsReplaceToReplaceAll | staticcheck Parity | - | To be committed |
+| 122 | BytesReplaceToReplaceAll | staticcheck Parity | - | To be committed |
+| 123 | EmptySliceTest | staticcheck Parity | - | To be committed |
+| 124 | HttpStatusConstants | Idiom | - | To be committed |
+| 125 | HttpRedirectConstants | Idiom | - | To be committed |
+| 126 | FmtSprintString | staticcheck Parity | - | To be committed |
+| 127 | FmtSprintfString | staticcheck Parity | - | To be committed |
+| 128 | MathPow05 | staticcheck Parity | - | To be committed |
+| 129 | StringsReplaceEmpty | staticcheck Parity | - | To be committed |
+| 130 | BytesReplaceEmpty | staticcheck Parity | - | To be committed |
+
+**Tests:** 236 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
