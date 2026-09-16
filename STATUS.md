@@ -80,8 +80,13 @@
 | 63 | SimplifyRange | Code Quality & Linters | - | To be committed |
 | 64 | TimeSinceFix | Code Quality & Linters | - | To be committed |
 | 65 | TimeUntilFix | Code Quality & Linters | - | To be committed |
+| 66 | TempDirMigration | Testing & CI | - | To be committed |
+| 67 | DeepEqualMigration | Testing & CI | - | To be committed |
+| 68 | ParallelizeTests | Testing & CI | - | To be committed |
+| 69 | TestifyNoErrorToStdlib | Testing & CI | - | To be committed |
+| 70 | MockgenToUberMock | Testing & CI | - | To be committed |
 
-**Tests:** 169 passing, 0 failing  
+**Tests:** 174 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
