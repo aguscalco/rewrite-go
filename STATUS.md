@@ -149,7 +149,18 @@
 | 129 | StringsReplaceEmpty | staticcheck Parity | - | To be committed |
 | 130 | BytesReplaceEmpty | staticcheck Parity | - | To be committed |
 
-**Tests:** 236 passing, 0 failing  
+| 131 | HttpErrorConstants | Idiom | - | To be committed |
+| 132 | StringBytesString | staticcheck Parity | - | To be committed |
+| 133 | BytesStringBytes | staticcheck Parity | - | To be committed |
+| 134 | SprintfIntToItoa | staticcheck Parity | - | To be committed |
+| 135 | TimeUntilNow | staticcheck Parity | - | To be committed |
+| 136 | ErrorsNewToFmtErrorf | staticcheck Parity | - | To be committed |
+| 137 | StringsEqualFoldToBytes | staticcheck Parity | - | To be committed |
+| 138 | BytesEqualFoldToStrings | staticcheck Parity | - | To be committed |
+| 139 | BytesCountToContains | staticcheck Parity | - | To be committed |
+| 140 | BytesIndexToContains | staticcheck Parity | - | To be committed |
+
+**Tests:** 246 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
