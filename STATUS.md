@@ -90,8 +90,13 @@
 | 73 | WeakHashMigration | Security & Crypto | - | To be committed |
 | 74 | SSRFPrevention | Security & Crypto | - | To be committed |
 | 75 | WeakCryptoKeyCheck | Security & Crypto | - | To be committed |
+| 76 | LogrusToSlog | Ecosystem Frameworks | - | To be committed |
+| 77 | ZapToSlog | Ecosystem Frameworks | - | To be committed |
+| 78 | GorillaToStdlib | Ecosystem Frameworks | - | To be committed |
+| 79 | GinBindValidation | Ecosystem Frameworks | - | To be committed |
+| 80 | GormAutoMigrateCheck | Ecosystem Frameworks | - | To be committed |
 
-**Tests:** 180 passing, 0 failing  
+**Tests:** 185 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
