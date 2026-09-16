@@ -28,194 +28,205 @@
 | 14 | ReplaceContextTODO | Context Propagation | - | `b860877` |
 | 15 | AddContextTimeout | Context Propagation | - | `a2f9153` |
 
-| 16 | ContextCancellation | Context Propagation | - | To be committed |
-| 17 | ContextWithValue | Context Propagation | - | To be committed |
+| 16 | ContextCancellation | Context Propagation | - | Committed |
+| 17 | ContextWithValue | Context Propagation | - | Committed |
 | 18 | ParameterizedQueries | Security | - | `15` |
-| 19 | SecureRandom | Security | - | To be committed |
-| 20 | TLSConfig | Security | - | To be committed |
-| 21 | InputValidation | Security | - | To be committed |
-| 22 | PathTraversal | Security | - | To be committed |
-| 23 | SQLInjection | Security | - | To be committed |
-| 24 | AddTestHelper | Testing | - | To be committed |
-| 25 | UseTSetenv | Testing | 1.17+ | To be committed |
-| 26 | TestSubtests | Testing | - | To be committed |
-| 27 | TableDrivenTests | Testing | - | To be committed |
-| 28 | BenchmarkConversion | Testing | - | To be committed |
-| 29 | ExampleTestGeneration | Testing | - | To be committed |
-| 30 | MockGeneration | Testing | - | To be committed |
-| 31 | PreallocateSlices | Performance | - | To be committed |
-| 32 | PreallocateMaps | Performance | - | To be committed |
-| 33 | AvoidSliceAppend | Performance | - | To be committed |
-| 34 | UseStringBuilder | Performance | - | To be committed |
-| 35 | UseSyncPool | Performance | - | To be committed |
-| 36 | OptimizeStringConversion | Performance | - | To be committed |
-| 37 | UseBytesBuffer | Performance | - | To be committed |
-| 38 | ReceiverNaming | Code Quality | - | To be committed |
-| 39 | PackageComment | Code Quality | - | To be committed |
-| 40 | ExportedComment | Code Quality | - | To be committed |
-| 41 | SimplifyReturn | Code Quality | - | To be committed |
-| 42 | UseNamedReturns | Code Quality | - | To be committed |
-| 43 | ErrorVariableNaming | Code Quality | - | To be committed |
-| 44 | ConstantNaming | Code Quality | - | To be committed |
+| 19 | SecureRandom | Security | - | Committed |
+| 20 | TLSConfig | Security | - | Committed |
+| 21 | InputValidation | Security | - | Committed |
+| 22 | PathTraversal | Security | - | Committed |
+| 23 | SQLInjection | Security | - | Committed |
+| 24 | AddTestHelper | Testing | - | Committed |
+| 25 | UseTSetenv | Testing | 1.17+ | Committed |
+| 26 | TestSubtests | Testing | - | Committed |
+| 27 | TableDrivenTests | Testing | - | Committed |
+| 28 | BenchmarkConversion | Testing | - | Committed |
+| 29 | ExampleTestGeneration | Testing | - | Committed |
+| 30 | MockGeneration | Testing | - | Committed |
+| 31 | PreallocateSlices | Performance | - | Committed |
+| 32 | PreallocateMaps | Performance | - | Committed |
+| 33 | AvoidSliceAppend | Performance | - | Committed |
+| 34 | UseStringBuilder | Performance | - | Committed |
+| 35 | UseSyncPool | Performance | - | Committed |
+| 36 | OptimizeStringConversion | Performance | - | Committed |
+| 37 | UseBytesBuffer | Performance | - | Committed |
+| 38 | ReceiverNaming | Code Quality | - | Committed |
+| 39 | PackageComment | Code Quality | - | Committed |
+| 40 | ExportedComment | Code Quality | - | Committed |
+| 41 | SimplifyReturn | Code Quality | - | Committed |
+| 42 | UseNamedReturns | Code Quality | - | Committed |
+| 43 | ErrorVariableNaming | Code Quality | - | Committed |
+| 44 | ConstantNaming | Code Quality | - | Committed |
 
-| 45 | GenericsRefactor | Advanced Go Features | - | To be committed |
-| 46 | FuzzTestConversion | Advanced Go Features | - | To be committed |
+| 45 | GenericsRefactor | Advanced Go Features | - | Committed |
+| 46 | FuzzTestConversion | Advanced Go Features | - | Committed |
 
-| 47 | GinV1ToV2 | Framework Migrations | - | To be committed |
-| 48 | EchoV4ToV5 | Framework Migrations | - | To be committed |
-| 49 | HttpServeMuxRouting | Framework Migrations | - | To be committed |
-| 50 | GormV1ToV2 | Framework Migrations | - | To be committed |
-| 51 | LoopVarCaptureFix | Modern Go Adoptions | - | To be committed |
-| 52 | UseClearBuiltin | Modern Go Adoptions | - | To be committed |
-| 53 | UseMinMaxBuiltins | Modern Go Adoptions | - | To be committed |
-| 54 | ErrorsJoinMigration | Modern Go Adoptions | - | To be committed |
-| 55 | IterSeqMigration | Modern Go Adoptions | - | To be committed |
-| 56 | DetectContextLeak | Concurrency & Safety | - | To be committed |
-| 57 | MutexByValue | Concurrency & Safety | - | To be committed |
-| 58 | TimerLeakPrevention | Concurrency & Safety | - | To be committed |
-| 59 | AtomicPointerMigration | Concurrency & Safety | - | To be committed |
-| 60 | DeferInLoop | Concurrency & Safety | - | To be committed |
-| 61 | YodaCondition | Code Quality & Linters | - | To be committed |
-| 62 | RemoveRedundantType | Code Quality & Linters | - | To be committed |
-| 63 | SimplifyRange | Code Quality & Linters | - | To be committed |
-| 64 | TimeSinceFix | Code Quality & Linters | - | To be committed |
-| 65 | TimeUntilFix | Code Quality & Linters | - | To be committed |
-| 66 | TempDirMigration | Testing & CI | - | To be committed |
-| 67 | DeepEqualMigration | Testing & CI | - | To be committed |
-| 68 | ParallelizeTests | Testing & CI | - | To be committed |
-| 69 | TestifyNoErrorToStdlib | Testing & CI | - | To be committed |
-| 70 | MockgenToUberMock | Testing & CI | - | To be committed |
-| 71 | InsecureTLSCheck | Security & Crypto | - | To be committed |
-| 72 | HardcodedSecretRemoval | Security & Crypto | - | To be committed |
-| 73 | WeakHashMigration | Security & Crypto | - | To be committed |
-| 74 | SSRFPrevention | Security & Crypto | - | To be committed |
-| 75 | WeakCryptoKeyCheck | Security & Crypto | - | To be committed |
-| 76 | LogrusToSlog | Ecosystem Frameworks | - | To be committed |
-| 77 | ZapToSlog | Ecosystem Frameworks | - | To be committed |
-| 78 | GorillaToStdlib | Ecosystem Frameworks | - | To be committed |
-| 79 | GinBindValidation | Ecosystem Frameworks | - | To be committed |
-| 80 | GormAutoMigrateCheck | Ecosystem Frameworks | - | To be committed |
-| 81 | EmptyStringTest | gocritic Parity | - | To be committed |
-| 82 | BoolExprSimplify | gocritic Parity | - | To be committed |
-| 83 | PreferFilepathJoin | gocritic Parity | - | To be committed |
-| 84 | DupArgSimplify | gocritic Parity | - | To be committed |
-| 85 | Underef | gocritic Parity | - | To be committed |
-| 86 | IndexToContains | staticcheck Parity | - | To be committed |
-| 87 | CountToContains | staticcheck Parity | - | To be committed |
-| 88 | SprintfConcatSimplify | gocritic Parity | - | To be committed |
-| 89 | FmtErrorfToErrorsNew | staticcheck Parity | - | To be committed |
-| 90 | ErrorsNewErrorf | staticcheck Parity | - | To be committed |
-| 91 | BytesCompareToEqual | staticcheck Parity | - | To be committed |
-| 92 | StringsCompareToEqual | staticcheck Parity | - | To be committed |
-| 93 | FmtFormatToPrint | staticcheck Parity | - | To be committed |
-| 94 | StringsIndexByte | staticcheck Parity | - | To be committed |
-| 95 | MathPowToMultiplication | staticcheck Parity | - | To be committed |
-| 96 | EmptyAppend | staticcheck Parity | - | To be committed |
-| 97 | TimeSleepZero | gocritic Parity | - | To be committed |
-| 98 | UnnecessaryStringCast | gocritic Parity | - | To be committed |
+| 47 | GinV1ToV2 | Framework Migrations | - | Committed |
+| 48 | EchoV4ToV5 | Framework Migrations | - | Committed |
+| 49 | HttpServeMuxRouting | Framework Migrations | - | Committed |
+| 50 | GormV1ToV2 | Framework Migrations | - | Committed |
+| 51 | LoopVarCaptureFix | Modern Go Adoptions | - | Committed |
+| 52 | UseClearBuiltin | Modern Go Adoptions | - | Committed |
+| 53 | UseMinMaxBuiltins | Modern Go Adoptions | - | Committed |
+| 54 | ErrorsJoinMigration | Modern Go Adoptions | - | Committed |
+| 55 | IterSeqMigration | Modern Go Adoptions | - | Committed |
+| 56 | DetectContextLeak | Concurrency & Safety | - | Committed |
+| 57 | MutexByValue | Concurrency & Safety | - | Committed |
+| 58 | TimerLeakPrevention | Concurrency & Safety | - | Committed |
+| 59 | AtomicPointerMigration | Concurrency & Safety | - | Committed |
+| 60 | DeferInLoop | Concurrency & Safety | - | Committed |
+| 61 | YodaCondition | Code Quality & Linters | - | Committed |
+| 62 | RemoveRedundantType | Code Quality & Linters | - | Committed |
+| 63 | SimplifyRange | Code Quality & Linters | - | Committed |
+| 64 | TimeSinceFix | Code Quality & Linters | - | Committed |
+| 65 | TimeUntilFix | Code Quality & Linters | - | Committed |
+| 66 | TempDirMigration | Testing & CI | - | Committed |
+| 67 | DeepEqualMigration | Testing & CI | - | Committed |
+| 68 | ParallelizeTests | Testing & CI | - | Committed |
+| 69 | TestifyNoErrorToStdlib | Testing & CI | - | Committed |
+| 70 | MockgenToUberMock | Testing & CI | - | Committed |
+| 71 | InsecureTLSCheck | Security & Crypto | - | Committed |
+| 72 | HardcodedSecretRemoval | Security & Crypto | - | Committed |
+| 73 | WeakHashMigration | Security & Crypto | - | Committed |
+| 74 | SSRFPrevention | Security & Crypto | - | Committed |
+| 75 | WeakCryptoKeyCheck | Security & Crypto | - | Committed |
+| 76 | LogrusToSlog | Ecosystem Frameworks | - | Committed |
+| 77 | ZapToSlog | Ecosystem Frameworks | - | Committed |
+| 78 | GorillaToStdlib | Ecosystem Frameworks | - | Committed |
+| 79 | GinBindValidation | Ecosystem Frameworks | - | Committed |
+| 80 | GormAutoMigrateCheck | Ecosystem Frameworks | - | Committed |
+| 81 | EmptyStringTest | gocritic Parity | - | Committed |
+| 82 | BoolExprSimplify | gocritic Parity | - | Committed |
+| 83 | PreferFilepathJoin | gocritic Parity | - | Committed |
+| 84 | DupArgSimplify | gocritic Parity | - | Committed |
+| 85 | Underef | gocritic Parity | - | Committed |
+| 86 | IndexToContains | staticcheck Parity | - | Committed |
+| 87 | CountToContains | staticcheck Parity | - | Committed |
+| 88 | SprintfConcatSimplify | gocritic Parity | - | Committed |
+| 89 | FmtErrorfToErrorsNew | staticcheck Parity | - | Committed |
+| 90 | ErrorsNewErrorf | staticcheck Parity | - | Committed |
+| 91 | BytesCompareToEqual | staticcheck Parity | - | Committed |
+| 92 | StringsCompareToEqual | staticcheck Parity | - | Committed |
+| 93 | FmtFormatToPrint | staticcheck Parity | - | Committed |
+| 94 | StringsIndexByte | staticcheck Parity | - | Committed |
+| 95 | MathPowToMultiplication | staticcheck Parity | - | Committed |
+| 96 | EmptyAppend | staticcheck Parity | - | Committed |
+| 97 | TimeSleepZero | gocritic Parity | - | Committed |
+| 98 | UnnecessaryStringCast | gocritic Parity | - | Committed |
 
-| 99 | MathExp2 | staticcheck Parity | - | To be committed |
-| 100 | DoubleNegation | gocritic Parity | - | To be committed |
-| 101 | StringsHasPrefixEq | staticcheck Parity | - | To be committed |
-| 102 | RedundantBoolCmp | gocritic Parity | - | To be committed |
-| 103 | BytesHasPrefixEq | staticcheck Parity | - | To be committed |
-| 104 | TimeSubCompare | staticcheck Parity | - | To be committed |
-| 105 | MathFloorPlus05 | staticcheck Parity | - | To be committed |
-| 106 | IoUtilReadAllToIoReadAll | staticcheck Parity | - | To be committed |
-| 107 | IoUtilReadFileToOsReadFile | staticcheck Parity | - | To be committed |
-| 108 | IoUtilWriteFileToOsWriteFile | staticcheck Parity | - | To be committed |
-| 109 | IoUtilReadDirToOsReadDir | staticcheck Parity | - | To be committed |
-| 110 | IoUtilNopCloserToIoNopCloser | staticcheck Parity | - | To be committed |
+| 99 | MathExp2 | staticcheck Parity | - | Committed |
+| 100 | DoubleNegation | gocritic Parity | - | Committed |
+| 101 | StringsHasPrefixEq | staticcheck Parity | - | Committed |
+| 102 | RedundantBoolCmp | gocritic Parity | - | Committed |
+| 103 | BytesHasPrefixEq | staticcheck Parity | - | Committed |
+| 104 | TimeSubCompare | staticcheck Parity | - | Committed |
+| 105 | MathFloorPlus05 | staticcheck Parity | - | Committed |
+| 106 | IoUtilReadAllToIoReadAll | staticcheck Parity | - | Committed |
+| 107 | IoUtilReadFileToOsReadFile | staticcheck Parity | - | Committed |
+| 108 | IoUtilWriteFileToOsWriteFile | staticcheck Parity | - | Committed |
+| 109 | IoUtilReadDirToOsReadDir | staticcheck Parity | - | Committed |
+| 110 | IoUtilNopCloserToIoNopCloser | staticcheck Parity | - | Committed |
 
-| 111 | SecureDirectoryPermissions | gosec Parity | - | To be committed |
-| 112 | SecureFilePermissions | gosec Parity | - | To be committed |
-| 113 | TimeSinceNow | staticcheck Parity | - | To be committed |
-| 114 | MathAbsNeg | staticcheck Parity | - | To be committed |
-| 115 | SortInts | staticcheck Parity | - | To be committed |
-| 116 | SortFloat64s | staticcheck Parity | - | To be committed |
-| 117 | SortStrings | staticcheck Parity | - | To be committed |
-| 118 | MathIsNaNCompare | staticcheck Parity | - | To be committed |
-| 119 | MathPow1 | staticcheck Parity | - | To be committed |
-| 120 | MathPow0 | staticcheck Parity | - | To be committed |
+| 111 | SecureDirectoryPermissions | gosec Parity | - | Committed |
+| 112 | SecureFilePermissions | gosec Parity | - | Committed |
+| 113 | TimeSinceNow | staticcheck Parity | - | Committed |
+| 114 | MathAbsNeg | staticcheck Parity | - | Committed |
+| 115 | SortInts | staticcheck Parity | - | Committed |
+| 116 | SortFloat64s | staticcheck Parity | - | Committed |
+| 117 | SortStrings | staticcheck Parity | - | Committed |
+| 118 | MathIsNaNCompare | staticcheck Parity | - | Committed |
+| 119 | MathPow1 | staticcheck Parity | - | Committed |
+| 120 | MathPow0 | staticcheck Parity | - | Committed |
 
-| 121 | StringsReplaceToReplaceAll | staticcheck Parity | - | To be committed |
-| 122 | BytesReplaceToReplaceAll | staticcheck Parity | - | To be committed |
-| 123 | EmptySliceTest | staticcheck Parity | - | To be committed |
-| 124 | HttpStatusConstants | Idiom | - | To be committed |
-| 125 | HttpRedirectConstants | Idiom | - | To be committed |
-| 126 | FmtSprintString | staticcheck Parity | - | To be committed |
-| 127 | FmtSprintfString | staticcheck Parity | - | To be committed |
-| 128 | MathPow05 | staticcheck Parity | - | To be committed |
-| 129 | StringsReplaceEmpty | staticcheck Parity | - | To be committed |
-| 130 | BytesReplaceEmpty | staticcheck Parity | - | To be committed |
+| 121 | StringsReplaceToReplaceAll | staticcheck Parity | - | Committed |
+| 122 | BytesReplaceToReplaceAll | staticcheck Parity | - | Committed |
+| 123 | EmptySliceTest | staticcheck Parity | - | Committed |
+| 124 | HttpStatusConstants | Idiom | - | Committed |
+| 125 | HttpRedirectConstants | Idiom | - | Committed |
+| 126 | FmtSprintString | staticcheck Parity | - | Committed |
+| 127 | FmtSprintfString | staticcheck Parity | - | Committed |
+| 128 | MathPow05 | staticcheck Parity | - | Committed |
+| 129 | StringsReplaceEmpty | staticcheck Parity | - | Committed |
+| 130 | BytesReplaceEmpty | staticcheck Parity | - | Committed |
 
-| 131 | HttpErrorConstants | Idiom | - | To be committed |
-| 132 | StringBytesString | staticcheck Parity | - | To be committed |
-| 133 | BytesStringBytes | staticcheck Parity | - | To be committed |
-| 134 | SprintfIntToItoa | staticcheck Parity | - | To be committed |
-| 135 | TimeUntilNow | staticcheck Parity | - | To be committed |
-| 136 | ErrorsNewToFmtErrorf | staticcheck Parity | - | To be committed |
-| 137 | StringsEqualFoldToBytes | staticcheck Parity | - | To be committed |
-| 138 | BytesEqualFoldToStrings | staticcheck Parity | - | To be committed |
-| 139 | BytesCountToContains | staticcheck Parity | - | To be committed |
-| 140 | BytesIndexToContains | staticcheck Parity | - | To be committed |
+| 131 | HttpErrorConstants | Idiom | - | Committed |
+| 132 | StringBytesString | staticcheck Parity | - | Committed |
+| 133 | BytesStringBytes | staticcheck Parity | - | Committed |
+| 134 | SprintfIntToItoa | staticcheck Parity | - | Committed |
+| 135 | TimeUntilNow | staticcheck Parity | - | Committed |
+| 136 | ErrorsNewToFmtErrorf | staticcheck Parity | - | Committed |
+| 137 | StringsEqualFoldToBytes | staticcheck Parity | - | Committed |
+| 138 | BytesEqualFoldToStrings | staticcheck Parity | - | Committed |
+| 139 | BytesCountToContains | staticcheck Parity | - | Committed |
+| 140 | BytesIndexToContains | staticcheck Parity | - | Committed |
 
-| 141 | MathLog10 | staticcheck Parity | - | To be committed |
-| 142 | MathLog2 | staticcheck Parity | - | To be committed |
-| 143 | IndexToHasPrefix | staticcheck Parity | - | To be committed |
-| 144 | BytesIndexToHasPrefix | staticcheck Parity | - | To be committed |
-| 145 | FmtFprintToPrint | staticcheck Parity | - | To be committed |
-| 146 | MathExpm1 | staticcheck Parity | - | To be committed |
-| 147 | MathLog1p | staticcheck Parity | - | To be committed |
-| 148 | FilepathJoinEmptyString | staticcheck Parity | - | To be committed |
-| 149 | PathJoinEmptyString | staticcheck Parity | - | To be committed |
-| 150 | BytesEqualNil | staticcheck Parity | - | To be committed |
+| 141 | MathLog10 | staticcheck Parity | - | Committed |
+| 142 | MathLog2 | staticcheck Parity | - | Committed |
+| 143 | IndexToHasPrefix | staticcheck Parity | - | Committed |
+| 144 | BytesIndexToHasPrefix | staticcheck Parity | - | Committed |
+| 145 | FmtFprintToPrint | staticcheck Parity | - | Committed |
+| 146 | MathExpm1 | staticcheck Parity | - | Committed |
+| 147 | MathLog1p | staticcheck Parity | - | Committed |
+| 148 | FilepathJoinEmptyString | staticcheck Parity | - | Committed |
+| 149 | PathJoinEmptyString | staticcheck Parity | - | Committed |
+| 150 | BytesEqualNil | staticcheck Parity | - | Committed |
 
-| 151 | IoUtilTempFileToOsCreateTemp | staticcheck Parity | - | To be committed |
-| 152 | IoUtilTempDirToOsMkdirTemp | staticcheck Parity | - | To be committed |
-| 153 | BytesCompareNotEqual | staticcheck Parity | - | To be committed |
-| 154 | StringsCompareNotEqual | staticcheck Parity | - | To be committed |
-| 155 | StringsEqualFold | staticcheck Parity | - | To be committed |
-| 156 | BytesEqualFold | staticcheck Parity | - | To be committed |
-| 157 | SortStringsAreSorted | staticcheck Parity | - | To be committed |
-| 158 | SortIntsAreSorted | staticcheck Parity | - | To be committed |
-| 159 | SortFloat64sAreSorted | staticcheck Parity | - | To be committed |
-| 160 | MathPow10 | staticcheck Parity | - | To be committed |
+| 151 | IoUtilTempFileToOsCreateTemp | staticcheck Parity | - | Committed |
+| 152 | IoUtilTempDirToOsMkdirTemp | staticcheck Parity | - | Committed |
+| 153 | BytesCompareNotEqual | staticcheck Parity | - | Committed |
+| 154 | StringsCompareNotEqual | staticcheck Parity | - | Committed |
+| 155 | StringsEqualFold | staticcheck Parity | - | Committed |
+| 156 | BytesEqualFold | staticcheck Parity | - | Committed |
+| 157 | SortStringsAreSorted | staticcheck Parity | - | Committed |
+| 158 | SortIntsAreSorted | staticcheck Parity | - | Committed |
+| 159 | SortFloat64sAreSorted | staticcheck Parity | - | Committed |
+| 160 | MathPow10 | staticcheck Parity | - | Committed |
 
-| 161 | TimeNowSubToSince | staticcheck Parity | - | To be committed |
-| 162 | TimeSubNowToUntil | staticcheck Parity | - | To be committed |
-| 163 | MathFloorAddHalf | staticcheck Parity | - | To be committed |
-| 164 | FmtPrintfNoArgs | staticcheck Parity | - | To be committed |
-| 165 | FmtFprintfNoArgs | staticcheck Parity | - | To be committed |
-| 166 | FmtSprintfNoArgs | staticcheck Parity | - | To be committed |
-| 167 | SortSortIntSlice | staticcheck Parity | - | To be committed |
-| 168 | SortSortStringSlice | staticcheck Parity | - | To be committed |
-| 169 | SortSortFloat64Slice | staticcheck Parity | - | To be committed |
-| 170 | FmtSprintfVToSprint | staticcheck Parity | - | To be committed |
+| 161 | TimeNowSubToSince | staticcheck Parity | - | Committed |
+| 162 | TimeSubNowToUntil | staticcheck Parity | - | Committed |
+| 163 | MathFloorAddHalf | staticcheck Parity | - | Committed |
+| 164 | FmtPrintfNoArgs | staticcheck Parity | - | Committed |
+| 165 | FmtFprintfNoArgs | staticcheck Parity | - | Committed |
+| 166 | FmtSprintfNoArgs | staticcheck Parity | - | Committed |
+| 167 | SortSortIntSlice | staticcheck Parity | - | Committed |
+| 168 | SortSortStringSlice | staticcheck Parity | - | Committed |
+| 169 | SortSortFloat64Slice | staticcheck Parity | - | Committed |
+| 170 | FmtSprintfVToSprint | staticcheck Parity | - | Committed |
 
-| 171 | MathPowNeg1 | staticcheck Parity | - | To be committed |
-| 172 | MathPowNeg05 | staticcheck Parity | - | To be committed |
-| 173 | CryptoMd5SumToSha256 | staticcheck Parity | - | To be committed |
-| 174 | CryptoSha1SumToSha256 | staticcheck Parity | - | To be committed |
-| 175 | StringsIndexAnyToContainsAny | staticcheck Parity | - | To be committed |
-| 176 | StringsIndexRuneToContainsRune | staticcheck Parity | - | To be committed |
-| 177 | BytesIndexAnyToContainsAny | staticcheck Parity | - | To be committed |
-| 178 | BytesIndexRuneToContainsRune | staticcheck Parity | - | To be committed |
-| 179 | TimeUnixNanoToMilli | staticcheck Parity | - | To be committed |
-| 180 | TimeUnixNanoToMicro | staticcheck Parity | - | To be committed |
+| 171 | MathPowNeg1 | staticcheck Parity | - | Committed |
+| 172 | MathPowNeg05 | staticcheck Parity | - | Committed |
+| 173 | CryptoMd5SumToSha256 | staticcheck Parity | - | Committed |
+| 174 | CryptoSha1SumToSha256 | staticcheck Parity | - | Committed |
+| 175 | StringsIndexAnyToContainsAny | staticcheck Parity | - | Committed |
+| 176 | StringsIndexRuneToContainsRune | staticcheck Parity | - | Committed |
+| 177 | BytesIndexAnyToContainsAny | staticcheck Parity | - | Committed |
+| 178 | BytesIndexRuneToContainsRune | staticcheck Parity | - | Committed |
+| 179 | TimeUnixNanoToMilli | staticcheck Parity | - | Committed |
+| 180 | TimeUnixNanoToMicro | staticcheck Parity | - | Committed |
 
-| 181 | SortIntsToSlicesSort | staticcheck Parity | - | To be committed |
-| 182 | SortStringsToSlicesSort | staticcheck Parity | - | To be committed |
-| 183 | SortFloat64sToSlicesSort | staticcheck Parity | - | To be committed |
-| 184 | SortIntsAreSortedToSlicesIsSorted | staticcheck Parity | - | To be committed |
-| 185 | SortStringsAreSortedToSlicesIsSorted | staticcheck Parity | - | To be committed |
-| 186 | SortFloat64sAreSortedToSlicesIsSorted | staticcheck Parity | - | To be committed |
-| 187 | StringsCompareLessThan | staticcheck Parity | - | To be committed |
-| 188 | StringsCompareGreaterThan | staticcheck Parity | - | To be committed |
-| 189 | StringsCompareLessThanEqual | staticcheck Parity | - | To be committed |
-| 190 | StringsCompareGreaterThanEqual | staticcheck Parity | - | To be committed |
+| 181 | SortIntsToSlicesSort | staticcheck Parity | - | Committed |
+| 182 | SortStringsToSlicesSort | staticcheck Parity | - | Committed |
+| 183 | SortFloat64sToSlicesSort | staticcheck Parity | - | Committed |
+| 184 | SortIntsAreSortedToSlicesIsSorted | staticcheck Parity | - | Committed |
+| 185 | SortStringsAreSortedToSlicesIsSorted | staticcheck Parity | - | Committed |
+| 186 | SortFloat64sAreSortedToSlicesIsSorted | staticcheck Parity | - | Committed |
+| 187 | StringsCompareLessThan | staticcheck Parity | - | Committed |
+| 188 | StringsCompareGreaterThan | staticcheck Parity | - | Committed |
+| 189 | StringsCompareLessThanEqual | staticcheck Parity | - | Committed |
+| 190 | StringsCompareGreaterThanEqual | staticcheck Parity | - | Committed |
 
-**Tests:** 298 passing, 0 failing  
+| 191 | ErrorsNewFmtSprintf | staticcheck Parity | - | Committed |
+| 192 | FmtErrorfFmtSprintf | staticcheck Parity | - | Committed |
+| 193 | BytesReplaceZero | staticcheck Parity | - | Committed |
+| 194 | StringsReplaceZero | staticcheck Parity | - | Committed |
+| 195 | StringsContainsAnySingleChar | staticcheck Parity | - | Committed |
+| 196 | StringsIndexAnySingleChar | staticcheck Parity | - | Committed |
+| 197 | StringsLastIndexAnySingleChar | staticcheck Parity | - | Committed |
+| 198 | StringsSplitNToSplit | staticcheck Parity | - | Committed |
+| 199 | BytesSplitNToSplit | staticcheck Parity | - | Committed |
+| 200 | MathExp1ToE | staticcheck Parity | - | Committed |
+
+**Tests:** 308 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
