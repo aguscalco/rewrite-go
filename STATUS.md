@@ -65,8 +65,11 @@
 | 48 | EchoV4ToV5 | Framework Migrations | - | To be committed |
 | 49 | HttpServeMuxRouting | Framework Migrations | - | To be committed |
 | 50 | GormV1ToV2 | Framework Migrations | - | To be committed |
+| 51 | LoopVarCaptureFix | Modern Go Adoptions | - | To be committed |
+| 52 | UseClearBuiltin | Modern Go Adoptions | - | To be committed |
+| 53 | UseMinMaxBuiltins | Modern Go Adoptions | - | To be committed |
 
-**Tests:** 154 passing, 0 failing  
+**Tests:** 157 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
