@@ -193,7 +193,18 @@
 | 169 | SortSortFloat64Slice | staticcheck Parity | - | To be committed |
 | 170 | FmtSprintfVToSprint | staticcheck Parity | - | To be committed |
 
-**Tests:** 276 passing, 0 failing  
+| 171 | MathPowNeg1 | staticcheck Parity | - | To be committed |
+| 172 | MathPowNeg05 | staticcheck Parity | - | To be committed |
+| 173 | CryptoMd5SumToSha256 | staticcheck Parity | - | To be committed |
+| 174 | CryptoSha1SumToSha256 | staticcheck Parity | - | To be committed |
+| 175 | StringsIndexAnyToContainsAny | staticcheck Parity | - | To be committed |
+| 176 | StringsIndexRuneToContainsRune | staticcheck Parity | - | To be committed |
+| 177 | BytesIndexAnyToContainsAny | staticcheck Parity | - | To be committed |
+| 178 | BytesIndexRuneToContainsRune | staticcheck Parity | - | To be committed |
+| 179 | TimeUnixNanoToMilli | staticcheck Parity | - | To be committed |
+| 180 | TimeUnixNanoToMicro | staticcheck Parity | - | To be committed |
+
+**Tests:** 288 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
