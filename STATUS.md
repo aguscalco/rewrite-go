@@ -171,7 +171,18 @@
 | 149 | PathJoinEmptyString | staticcheck Parity | - | To be committed |
 | 150 | BytesEqualNil | staticcheck Parity | - | To be committed |
 
-**Tests:** 256 passing, 0 failing  
+| 151 | IoUtilTempFileToOsCreateTemp | staticcheck Parity | - | To be committed |
+| 152 | IoUtilTempDirToOsMkdirTemp | staticcheck Parity | - | To be committed |
+| 153 | BytesCompareNotEqual | staticcheck Parity | - | To be committed |
+| 154 | StringsCompareNotEqual | staticcheck Parity | - | To be committed |
+| 155 | StringsEqualFold | staticcheck Parity | - | To be committed |
+| 156 | BytesEqualFold | staticcheck Parity | - | To be committed |
+| 157 | SortStringsAreSorted | staticcheck Parity | - | To be committed |
+| 158 | SortIntsAreSorted | staticcheck Parity | - | To be committed |
+| 159 | SortFloat64sAreSorted | staticcheck Parity | - | To be committed |
+| 160 | MathPow10 | staticcheck Parity | - | To be committed |
+
+**Tests:** 266 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
