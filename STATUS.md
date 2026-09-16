@@ -105,8 +105,16 @@
 | 88 | SprintfConcatSimplify | gocritic Parity | - | To be committed |
 | 89 | FmtErrorfToErrorsNew | staticcheck Parity | - | To be committed |
 | 90 | ErrorsNewErrorf | staticcheck Parity | - | To be committed |
+| 91 | BytesCompareToEqual | staticcheck Parity | - | To be committed |
+| 92 | StringsCompareToEqual | staticcheck Parity | - | To be committed |
+| 93 | FmtFormatToPrint | staticcheck Parity | - | To be committed |
+| 94 | StringsIndexByte | staticcheck Parity | - | To be committed |
+| 95 | MathPowToMultiplication | staticcheck Parity | - | To be committed |
+| 96 | EmptyAppend | staticcheck Parity | - | To be committed |
+| 97 | TimeSleepZero | gocritic Parity | - | To be committed |
+| 98 | UnnecessaryStringCast | gocritic Parity | - | To be committed |
 
-**Tests:** 195 passing, 0 failing  
+**Tests:** 203 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
