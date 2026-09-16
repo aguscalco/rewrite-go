@@ -85,8 +85,13 @@
 | 68 | ParallelizeTests | Testing & CI | - | To be committed |
 | 69 | TestifyNoErrorToStdlib | Testing & CI | - | To be committed |
 | 70 | MockgenToUberMock | Testing & CI | - | To be committed |
+| 71 | InsecureTLSCheck | Security & Crypto | - | To be committed |
+| 72 | HardcodedSecretRemoval | Security & Crypto | - | To be committed |
+| 73 | WeakHashMigration | Security & Crypto | - | To be committed |
+| 74 | SSRFPrevention | Security & Crypto | - | To be committed |
+| 75 | WeakCryptoKeyCheck | Security & Crypto | - | To be committed |
 
-**Tests:** 174 passing, 0 failing  
+**Tests:** 180 passing, 0 failing  
 **Build Status:** ✅ All tests pass (Gradle + Maven)
 
 ### 🚧 In Progress (0 recipes)
